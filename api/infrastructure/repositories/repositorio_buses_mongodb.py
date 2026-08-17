@@ -30,13 +30,14 @@ class RepositorioBusesMongodb(RepositorioBuses):
         pipeline = [
             {"$geoNear":{"near":{"type":"Point","coordinates":[lon,lat]},
                          "distanceField":"distancia","spherical":True,
-                         "query":{
-                             "metadata.ruta_codigo":ruta_id,
-                             "timestamp":{"$gte":marca_tiempo},
-                             "es_vuelta": vuelta
-                            }
+                         "key":"location"
                          }
             },
+            {"$match":{
+                "metadata.ruta_codigo":ruta_id,
+                "timestamp":{"$gte":marca_tiempo},
+                "es_vuelta": vuelta
+             }},
             {"$sort":{"distancia":1,"timestamp":-1}},
             {"$group":{
                 "_id":"$metadata.numero_bus",
