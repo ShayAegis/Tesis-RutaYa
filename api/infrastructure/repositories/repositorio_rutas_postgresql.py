@@ -81,7 +81,10 @@ class RutasRepositorioPostgreSql(RutasRepositorio):
         )
 
     async def calcular_caminata(self, punto_origen:Coordenada, punto_destino:Coordenada) -> Caminata | None:
-        url = f"http://{configuracion.osrm_host}:{configuracion.osrm_port}/route/v1/foot/{punto_origen.lon},{punto_origen.lat};{punto_destino.lon},{punto_destino.lat}"
+        osrm_host = configuracion.osrm_host
+        if not osrm_host.startswith(("http://", "https://")):
+            osrm_host = f"http://{osrm_host}"
+        url = f"{osrm_host}/route/v1/foot/{punto_origen.lon},{punto_origen.lat};{punto_destino.lon},{punto_destino.lat}"
         try:
             api_solicitud = await _osrm_client.get(url)
         except httpx.TransportError:
