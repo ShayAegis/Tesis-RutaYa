@@ -27,9 +27,9 @@ class Configuracion(BaseSettings):
     mqtt_qos: int
     places_api_key: str
     osrm_host:str
-    osrm_port:int
     class Config:
         env_file = BASE_DIR.parent / ".env"
+        extra = "ignore"
 
 
 configuracion = Configuracion()
