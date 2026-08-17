@@ -31,4 +31,5 @@ def get_collection() -> Collection:
 
     collection = db[config.MONGO_COLLECTION]
     collection.create_index([("metadata.placa", 1), ("timestamp", -1)])
+    collection.create_index([("location", "2dsphere")])
     return collection
