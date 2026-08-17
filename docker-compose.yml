@@ -82,7 +82,7 @@ services:
     volumes: 
       - ./osrm/data:/data
     expose:
-      - ${OSRM_PORT}
+      - "5000"
     command:
       - osrm-routed
       - /data/cucuta.osrm
