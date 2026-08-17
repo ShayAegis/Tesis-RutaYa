@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de flota{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bus_admin_styles.css' %}">
+{% endblock %}
+{% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/bus_admin_script.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+    <header class="py-3 ps-5 border-bottom mb-5">
+        <div class="container-fluid">
+            <div class="row d-flex flex-row justify-content-between align-items-center">
+
+                <div class="col-md-4">
+                        <h4 class="text-primary fw-bold">Gestión de Flota</h4>
+                        <small class="text-muted">Administra tu flota de microbuses</small>
+                </div>
+                <div class="col-md-4">
+                    <input type="text"
+                           placeholder="Buscar bus por placa"
+                           id="search-placa"
+                           class="form-control form-control-sm bg-light w-50"
+                           value="{{ placa_search }}">
+                </div>
+                <div class="col-md-4">
+                    <button id="add-bus" class="btn btn-primary">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span class="fw-bold">
+                            Registrar nuevo bus
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container d-flex flex-column flex-fill">
+        <div class="row">
+            <div class="col-12 p-4">
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>PLACA</th>
+                            <th>MODELO</th>
+                            <th>RUTA ASIGNADA</th>
+                            <th>ESTADO RASTREADOR</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for bus in buses_paginator %}
+                        <tr data-placa="{{ bus.placa }}" data-numero="{{ bus.numero_bus }}">
+
+                            <td>
+                                <span class="text-primary fw-bold">
+                                    {{ bus.numero_bus }}
+                                </span>
+                            </td>
+
+                            <td>{{ bus.placa }}</td>
+                            <td>
+                                <div class="d-flex flex-column gap-0">
+                                    <p class="m-0">{{ bus.modelo }}</p>
+                                    <small class="text-muted">{{ bus.modelo_anio }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                {% with ruta=bus.ruta_activa %}
+
+                                        {% if not ruta %}
+                                            Sin ruta
+                                        {% else %}
+                                            <div class="d-flex flex-column">
+                                                <span class="text-primary fw-bold">{{ ruta.codigo }}</span>
+                                                <small class="text-muted">{{ ruta }}</small>
+                                            </div>
+                                        {% endif %}
+                                {% endwith %}
+                            </td>
+
+                            <td>
+
+                                {% if bus.rastreador_activo  %}
+                                    <span class="badge rounded-pill text-bg-primary">
+                                        Activo
+                                    </span>
+                                    <i class="fa-solid {{ bus.signalIcon.icono }} {{ bus.signalIcon.color }} ms-1"
+                                       title="{{ bus.signalIcon.titulo }}"></i>
+                                {% elif not bus.rastreador_activo and bus.rastreador_asignado %}
+                                    <span class="badge rounded-pill text-bg-danger">
+                                        Inactivo
+                                    </span>
+                                {% else %}
+                                    <span class="badge rounded-pill text-bg-secondary">
+                                        Sin rastreador
+                                    </span>
+
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    <button
+                                        class="btn btn-link text-primary p-0 btn-update"
+                                        title="Editar ruta"
+                                        data-placa="{{ bus.placa }}">
+
+                                        <i class="fa-solid fa-pencil"></i>
+
+                                    </button>
+
+                                    <button
+                                        class="btn btn-link text-danger p-0 btn-delete"
+                                        title="Eliminar ruta"
+                                        data-placa="{{ bus.placa }}">
+
+                                        <i class="fa-regular fa-trash-can"></i>
+
+                                    </button>
+
+                                    <a
+                                        href="{% url 'historialRutaBus' placa=bus.placa %}"
+                                        class="btn btn-link p-0 text-tertiary"
+                                        title="Ver histórico ruta">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </a>
+                                </div>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="row d-flex flex-row justify-content-between mt-auto mb-5">
+            <div class="col-md-3">
+                {% if buses_paginator.has_previous %}
+                    <a href="?page={{ buses_paginator.previous_page_number }}">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span>Anterior</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                <span>{{ buses_paginator.number }} de {{ buses_paginator.paginator.num_pages }}</span>
+            </div>
+            <div class="col-md-3">
+                {% if buses_paginator.has_next %}
+                    <a href="?page={{ buses_paginator.next_page_number }}">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Drawer lateral -->
+
+    <div
+        class="offcanvas offcanvas-end"
+        tabindex="-1"
+        id="busDrawer">
+
+        <div class="offcanvas-header">
+
+            <div>
+                <h5 id="form-title" class="text-primary fw-bold"></h5>
+                <small id="form-subtitle" class="fst-italic text-muted"></small>
+            </div>
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas">
+            </button>
+
+        </div>
+
+        <div class="offcanvas-body">
+
+            <form method="POST" id="bus-form" class="d-flex flex-column h-100">
+
+                {% csrf_token %}
+
+                <div class="form-group mb-2">
+                    <label
+                        for="{{ addBusForm.placa.id_for_label }}"
+                        class="form-label fw-bold">
+
+                        {{ addBusForm.placa.label }}
+
+                    </label>
+
+                    {{ addBusForm.placa }}
+                </div>
+
+                <div class="form-group mb-2">
+                    <label
+                        for="{{ addBusForm.numero_bus.id_for_label }}"
+                        class="form-label fw-bold">
+
+                        {{ addBusForm.numero_bus.label }}
+
+                    </label>
+
+                    {{ addBusForm.numero_bus }}
+                </div>
+
+                <div class="form-group mb-2">
+                    <label
+                        for="{{ addBusForm.modelo.id_for_label }}"
+                        class="form-label fw-bold">
+
+                        {{ addBusForm.modelo.label }}
+
+                    </label>
+
+                    {{ addBusForm.modelo }}
+                </div>
+
+                <div class="form-group mb-2">
+                    <label
+                        for="{{ addBusForm.modelo_anio.id_for_label }}"
+                        class="form-label fw-bold">
+
+                        {{ addBusForm.modelo_anio.label }}
+
+                    </label>
+
+                    {{ addBusForm.modelo_anio }}
+                </div>
+
+                <div class="form-group mb-5">
+                    <label
+                        for="{{ addBusForm.ruta.id_for_label }}"
+                        class="form-label fw-bold">
+
+                        {{ addBusForm.ruta.label }}
+
+                    </label>
+
+                    {{ addBusForm.ruta }}
+                </div>
+
+                <div id="mac-config-section">
+
+                    <div class="form-check form-switch ps-0 d-flex align-items-center justify-content-between mb-2">
+
+                        <div>
+
+                            <label
+                                for="{{ addBusForm.activar_rastreador.id_for_label }}"
+                                class="fw-bold d-block mb-0">
+
+                                {{ addBusForm.activar_rastreador.label }}
+
+                            </label>
+
+                            <small class="text-muted">
+                                Activar monitoreo GPS en tiempo real
+                            </small>
+
+                        </div>
+
+                        {{ addBusForm.activar_rastreador }}
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ addBusForm.rastreador.id_for_label }}"
+                            class="form-label fw-bold">
+
+                            {{ addBusForm.rastreador.label }}
+
+                        </label>
+
+                        {{ addBusForm.rastreador }}
+
+                    </div>
+
+                </div>
+
+                <input type="hidden" name="method">
+
+                <div id="add-bus-error"  class="alert alert-danger mt-3 d-none"></div>
+
+                <div class="mt-auto d-flex justify-content-center gap-2">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="offcanvas">
+
+                        Cancelar
+
+                    </button>
+
+                    <input type="submit" id="btn-submit-form" class="btn btn-primary" value="">
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}

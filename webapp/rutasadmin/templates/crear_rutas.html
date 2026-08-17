@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Crear ruta
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/crear_ruta_styles.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+{% endblock %}
+{% block script %}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        window.initialParaderos = {
+            inicio: {% if puntoInicioParadero %}{
+                id: {{ puntoInicioParadero.id }},
+                nombre: "{{ puntoInicioParadero.nombre|escapejs }}",
+                lat: {{ puntoInicioParadero.ubicacion.y }},
+                lng: {{ puntoInicioParadero.ubicacion.x }}
+            }{% else %}null{% endif %},
+            final: {% if puntoFinalParadero %}{
+                id: {{ puntoFinalParadero.id }},
+                nombre: "{{ puntoFinalParadero.nombre|escapejs }}",
+                lat: {{ puntoFinalParadero.ubicacion.y }},
+                lng: {{ puntoFinalParadero.ubicacion.x }}
+            }{% else %}null{% endif %}
+        };
+    </script>
+
+    <script type="module" src="{% static 'js/crear_ruta_map.js' %}" defer></script>
+    <script type="module" src="{% static 'js/crear_ruta_script.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<header class="py-3 ps-5 border-bottom mb-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h4 class="text-primary fw-bold">Crear nueva ruta</h4>
+                <small class="text-muted">Crea y ajusta una nueva ruta de transporte</small>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="d-flex flex-row gap-4">
+        <button id="reset-points" class="btn text-danger p-0">
+            <i class="fa-regular fa-trash-can"></i>
+        </button>
+    </div>
+    <div id="map" class="col-md-12 mb-5"></div>
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-3 d-flex flex-column gap-4">
+                <div class="form-group position-relative">
+                    <label class="form-label fw-bold" for="{{ crearRutaForm.punto_inicio_nombre.id_for_label }}">
+                        {{ crearRutaForm.punto_inicio_nombre.label_tag }}
+                    </label>
+                    {{ crearRutaForm.punto_inicio_nombre }}
+                    {{ crearRutaForm.punto_inicio }}
+                    <ul class="list-group position-absolute w-100 paradero-suggestions d-none"
+                        data-target="{{ crearRutaForm.punto_inicio.id_for_label }}"></ul>
+                    {% if crearRutaForm.punto_inicio.errors %}
+                        <small class="text-danger">{{ crearRutaForm.punto_inicio.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group position-relative">
+                    <label for="{{ crearRutaForm.punto_final_nombre.id_for_label }}" class="form-label fw-bold">
+                        {{ crearRutaForm.punto_final_nombre.label_tag }}
+                    </label>
+                    {{ crearRutaForm.punto_final_nombre }}
+                    {{ crearRutaForm.punto_final }}
+                    <ul class="list-group position-absolute w-100 paradero-suggestions d-none"
+                        data-target="{{ crearRutaForm.punto_final.id_for_label }}"></ul>
+                    {% if crearRutaForm.punto_final.errors %}
+                        <small class="text-danger">{{ crearRutaForm.punto_final.errors.0 }}</small>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="{{ crearRutaForm.codigo.id_for_label }}" class="form-label fw-bold">
+                        {{ crearRutaForm.codigo.label_tag }}
+                    </label>
+                    {{ crearRutaForm.codigo }}
+                    <small class="fst-italic text-muted">* Identificador alfanumérico interno para la ruta</small>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex justify-content-center align-items-center">
+                <div id="card-distance" class="card  d-flex justify-content-center align-items-center p-3 h-75">
+                    <small class="text-muted">{{ crearRutaForm.distancia.label_tag }}</small>
+                    <h4 id="distance-display" class="text-primary fw-bold">0 m</h4>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex flex-column gap-4 justify-content-center align-items-center">
+                <button type="submit" class="btn btn-primary w-75">Crear ruta</button>
+                <button type="button" class="btn btn-secondary w-75">Cancelar y descartar</button>
+            </div>
+        </div>
+        {{ crearRutaForm.distancia }}
+        {{ crearRutaForm.recorrido }}
+        {% if crearRutaForm.recorrido.errors %}
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <small class="text-danger">{{ crearRutaForm.recorrido.errors.0 }}</small>
+                </div>
+            </div>
+        {% endif %}
+        {% if paradero_faltante_error %}
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+                        <span>{{ paradero_faltante_error }}</span>
+                        <a href="{% url 'paraderosAdmin' %}" class="btn btn-sm btn-outline-danger ms-3">Ir a Paraderos</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Crear paradero
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/crear_paradero_styles.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+{% endblock %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    {{ paraderos_existentes|json_script:"paraderos-existentes-data" }}
+    <script type="module" src="{% static 'js/crear_paradero_script.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+<header class="py-3 ps-5 border-bottom mb-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h4 class="text-primary fw-bold">Crear nuevo paradero</h4>
+                <small class="text-muted">Ubica en el mapa el punto donde estará el paradero</small>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div id="map" class="col-md-12 mb-5"></div>
+    <small id="paradero-existente-aviso" class="text-primary fst-italic d-none">
+        Este punto pertenece a un paradero ya existente, sus datos se autocompletaron.
+    </small>
+    <small id="paradero-registrado-aviso" class="text-warning fst-italic d-none d-block">
+        Este paradero ya está registrado para tu empresa con el código "<span id="paradero-registrado-codigo"></span>".
+    </small>
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label fw-bold" for="{{ crearParaderoForm.nombre.id_for_label }}">
+                        {{ crearParaderoForm.nombre.label_tag }}
+                    </label>
+                    {{ crearParaderoForm.nombre }}
+                    {% if crearParaderoForm.nombre.errors %}
+                        <small class="text-danger">{{ crearParaderoForm.nombre.errors.0 }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label fw-bold" for="{{ crearParaderoForm.codigo.id_for_label }}">
+                        {{ crearParaderoForm.codigo.label_tag }}
+                    </label>
+                    {{ crearParaderoForm.codigo }}
+                    <small class="fst-italic text-muted">* Identificador alfanumérico interno para el paradero</small>
+                    {% if crearParaderoForm.codigo.errors %}
+                        <small class="text-danger d-block">{{ crearParaderoForm.codigo.errors.0 }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="form-label fw-bold" for="{{ crearParaderoForm.radio.id_for_label }}">
+                        {{ crearParaderoForm.radio.label_tag }}
+                    </label>
+                    {{ crearParaderoForm.radio }}
+                    {% if crearParaderoForm.radio.errors %}
+                        <small class="text-danger">{{ crearParaderoForm.radio.errors.0 }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-3 d-flex flex-column gap-4 justify-content-center align-items-center">
+                <button type="submit" id="btn-crear-paradero" class="btn btn-primary w-75">Crear paradero</button>
+                <a href="{% url 'paraderosAdmin' %}" class="btn btn-secondary w-75">Cancelar y descartar</a>
+            </div>
+        </div>
+        {% if crearParaderoForm.lat.errors %}
+            <small class="text-danger">{{ crearParaderoForm.lat.errors.0 }}</small>
+        {% endif %}
+        {{ crearParaderoForm.lat }}
+        {{ crearParaderoForm.lng }}
+        {{ crearParaderoForm.paradero_id }}
+    </form>
+</div>
+{% endblock %}

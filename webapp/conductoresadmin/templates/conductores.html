@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestión de conductores{% endblock %}
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/script_conductores.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+{% block styles %}
+<link rel="stylesheet" type="text/css" href={% static 'css/conductores_styles.css' %}
+{% endblock %}
+    <header class="py-3 ps-5 border-bottom mb-5">
+        <div class="container-fluid">
+            <div class="row d-flex flex-row justify-content-between align-items-center">
+                <div class="col-md-3">
+                    <h4 class="text-primary fw-bold">Gestión de Conductores</h4>
+                    <small class="text-muted">Administra los conductores registrados</small>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" id="add-conductor">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span class="fw-bold">Agregar nuevo conductor</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container d-flex flex-column flex-fill">
+        <div class="row">
+            <div class="col-md-12 p-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>CEDULA</th>
+                            <th>NOMBRES</th>
+                            <th>APELLIDOS</th>
+                            <th>BUS ASIGNADO</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conductor in conductores_paginator %}
+                        <tr>
+                            <td><span class="text-primary fw-bold">{{ conductor.cedula }}</span></td>
+                            <td>{{ conductor.nombres }}</td>
+                            <td>{{ conductor.apellidos }}</td>
+                            <td>{{ conductor.bus_asignado|default:"-" }}</td>
+                            <td>
+                                <div>
+                                    <button class="btn btn-link p-0 text-priamry btn-update" data-cedula="{{ conductor.cedula }}">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+
+                                    <button class="btn btn-link p-0 text-danger btn-delete" data-cedula="{{ conductor.cedula }}">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+
+                                    <a href="{% url 'historialConductor' cedula=conductor.cedula %}" class="btn btn-link p-0 text-tertiary" title="Historial de asignaciones">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </a>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="row d-flex flex-row justify-content-between mt-auto mb-5">
+            <div class="col-md-3">
+                {% if conductores_paginator.has_previous %}
+                    <a href="?page={{ conductores_paginator.previous_page_number }}">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span>Anterior</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                <span>{{ conductores_paginator.number }} de {{ conductores_paginator.paginator.num_pages }}</span>
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                {% if conductores_paginator.has_next %}
+                    <a href="?page={{ conductores_paginator.next_page_number }}">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="conductorDrawer">
+        <div class="offcanvas-header d-flex flex-column">
+            <h5 class="text-primary fw-bold text-start w-100" id="form-title"></h5>
+            <small class="text-muted w-100" id="form-subtitle"></small>
+        </div>
+        <div class="offcanvas-body">
+            <form class="form d-flex flex-column gap-3 h-100" id="conductor-form">
+                {% csrf_token %}
+                <input type="hidden" name="method" value="post">
+                <div class="form-group">
+                    <label for="{{ form.cedula.id_for_label }}" class="form-label fw-bold">{{ form.cedula.label_tag }}</label>
+                    {{ form.cedula }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.nombres.id_for_label }}" class="form-label fw-bold">{{ form.nombres.label_tag }}</label>
+                    {{ form.nombres }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.apellidos.id_for_label }}" class="form-label fw-bold">{{ form.apellidos.label_tag }}</label>
+                    {{ form.apellidos }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.placa_bus.id_for_label }}" class="form-label fw-bold">{{ form.placa_bus.label_tag }}</label>
+                    {{ form.placa_bus }}
+                </div>
+                <div id="conductor-error" class="alert alert-danger mt-3 d-none"></div>
+
+                <button type="submit" class="btn btn-primary mt-auto" id="btn-submit-form"></button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

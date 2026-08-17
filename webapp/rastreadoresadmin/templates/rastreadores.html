@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Gestión de rastreadores{% endblock %}
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/script_rastreadores.js' %}" defer></script>
+{% endblock %}
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/rastreadores_styles.css' %}">
+{% endblock %}
+{% block content %}
+    <header class="py-3 ps-5 border-bottom mb-5">
+        <div class="container-fluid">
+            <div class="row d-flex flex-row justify-content-between align-items-center">
+                <div class="col-md-3">
+                    <h4 class="text-primary fw-bold">Gestión de Rastreadores</h4>
+                    <small class="text-muted">Administra los dispositivos de rastreo registrados</small>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary" id="add-rastreador">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span class="fw-bold">Agregar nuevo rastreador</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container d-flex flex-column flex-fill">
+        <div class="row">
+            <div class="col-md-12 p-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>SERIAL</th>
+                            <th>MODELO</th>
+                            <th>IMEI</th>
+                            <th>NÚMERO SIM</th>
+                            <th>OPERADOR RED</th>
+                            <th>ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rastreador in rastreadores_paginator %}
+                        <tr>
+                            <td><span class="text-primary fw-bold">{{ rastreador.serial }}</span></td>
+                            <td>{{ rastreador.modelo }}</td>
+                            <td>{{ rastreador.imei }}</td>
+                            <td>
+                                <p class="mb-0">{{ rastreador.numero_sim }}</p>
+                                <small class="text-muted">ICCID: {{ rastreador.iccid }}</small>
+                            </td>
+                            <td>{{ rastreador.operador_red }}</td>
+                            <td>
+                                <div>
+                                    <button class="btn btn-link p-0 text-priamry btn-update" data-serial="{{ rastreador.serial }}">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+
+                                    <button class="btn btn-link p-0 text-danger btn-delete" data-serial="{{ rastreador.serial }}">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+
+                                    <a href="{% url 'historialRastreador' serial=rastreador.serial %}" class="btn btn-link p-0 text-tertiary" title="Historial de asignaciones">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="row d-flex flex-row justify-content-between mt-auto mb-5">
+            <div class="col-md-3">
+                {% if rastreadores_paginator.has_previous %}
+                    <a href="?page={{ rastreadores_paginator.previous_page_number }}">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span>Anterior</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                <span>{{ rastreadores_paginator.number }} de {{ rastreadores_paginator.paginator.num_pages }}</span>
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                {% if rastreadores_paginator.has_next %}
+                    <a href="?page={{ rastreadores_paginator.next_page_number }}">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="rastreadorDrawer">
+        <div class="offcanvas-header d-flex flex-column">
+            <h5 class="text-primary fw-bold text-start w-100" id="form-title"></h5>
+            <small class="text-muted w-100" id="form-subtitle"></small>
+        </div>
+        <div class="offcanvas-body">
+            <form class="form d-flex flex-column gap-3 h-100" id="rastreador-form">
+                {% csrf_token %}
+                <input type="hidden" name="method" value="post">
+                <div class="form-group">
+                    <label for="{{ form.serial.id_for_label }}" class="form-label fw-bold">{{ form.serial.label_tag }}</label>
+                    {{ form.serial }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.modelo.id_for_label }}" class="form-label fw-bold">{{ form.modelo.label_tag }}</label>
+                    {{ form.modelo }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.imei.id_for_label }}" class="form-label fw-bold">{{ form.imei.label_tag }}</label>
+                    {{ form.imei }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.iccid.id_for_label }}" class="form-label fw-bold">{{ form.iccid.label_tag }}</label>
+                    {{ form.iccid }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.numero.id_for_label }}" class="form-label fw-bold">{{ form.numero.label_tag }}</label>
+                    {{ form.numero }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.operador.id_for_label }}" class="form-label fw-bold">{{ form.operador.label_tag }}</label>
+                    {{ form.operador }}
+                </div>
+                <div id="rastreador-error" class="alert alert-danger mt-3 d-none"></div>
+
+                <button type="submit" class="btn btn-primary mt-auto" id="btn-submit-form"></button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

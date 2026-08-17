@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Historial de asignaciones{% endblock %}
+
+{% block content %}
+    <header class="py-3 ps-5 border-bottom mb-5">
+        <div class="container-fluid">
+            <div class="row d-flex flex-row justify-content-between align-items-center">
+                <div class="col-md-6">
+                    <h4 class="text-primary fw-bold">Historial de asignaciones</h4>
+                    <small class="text-muted">{{ conductor.nombres }} {{ conductor.apellidos }} - CC {{ conductor.cedula }}</small>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a href="{% url 'conductoresAdmin' %}" class="btn btn-secondary">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span class="fw-bold">Volver</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container d-flex flex-column flex-fill">
+        <form method="get" class="row mb-4">
+            <div class="col-md-3">
+                <label for="fecha" class="form-label fw-bold">Filtrar por fecha</label>
+                <input type="date" id="fecha" name="fecha" class="form-control" value="{{ fecha }}"
+                       onchange="this.form.submit()">
+            </div>
+            {% if fecha %}
+                <div class="col-md-3 d-flex align-items-end">
+                    <a href="{% url 'historialConductor' cedula=conductor.cedula %}" class="btn btn-link">
+                        Quitar filtro
+                    </a>
+                </div>
+            {% endif %}
+        </form>
+
+        <div class="row">
+            <div class="col-md-12 p-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>BUS</th>
+                            <th>FECHA INICIO</th>
+                            <th>FECHA FIN</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asignacion in asignaciones %}
+                        <tr>
+                            <td class="text-primary fw-bold">{{ asignacion.bus_id }}</td>
+                            <td>{{ asignacion.fecha_inicio|date:"d/m/Y H:i" }}</td>
+                            <td>{{ asignacion.fecha_fin|date:"d/m/Y H:i"|default:"-" }}</td>
+                            <td>
+                                {% if asignacion.fecha_fin %}
+                                    <span class="badge text-bg-secondary">Finalizada</span>
+                                {% else %}
+                                    <span class="badge text-bg-success">Activa</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                {% if fecha %}
+                                    No hay asignaciones para la fecha seleccionada
+                                {% else %}
+                                    Este conductor no tiene asignaciones registradas
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

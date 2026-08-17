@@ -1,0 +1,55 @@
+#map{
+    height: 500px;
+    cursor:crosshair;
+}
+
+#card-distance{
+    background: rgb(85 188 243 / 0.25);
+    border-style: solid;
+    border-color: rgb(85 188 243 / 0.4);
+    border-radius:10px;
+    border-width: 1px;
+}
+
+.punto-ruta {
+    width: 12px;
+    height: 12px;
+    background-color: blue;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0,0,0,0.4);
+    cursor: grab;
+}
+
+.punto-ruta-blue {
+    background-color: blue;
+}
+
+.punto-ruta-red {
+    background-color: red;
+}
+
+.paradero-suggestions {
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.paradero-marker {
+    width: 18px;
+    height: 18px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0,0,0,0.4);
+}
+
+.paradero-marker-inicio {
+    background-color: #28a745;
+}
+
+.paradero-marker-final {
+    background-color: #dc3545;
+}

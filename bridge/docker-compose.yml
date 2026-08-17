@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  bridge:
+    build: .
+    depends_on:
+      - mongo
+      - mosquitto
+      - redis
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      MQTT_TOPIC: bus/+/position
+      MONGO_URI: mongodb://mongo:27017
+      MONGO_DB: tesis
+      MONGO_COLLECTION: bus_positions
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+volumes:
+  mongo_data:
+  redis_data:

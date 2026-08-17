@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestionar paraderos{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/paraderos_style.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+{% endblock %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    {{ paraderos_mapa|json_script:"paraderos-data" }}
+    <script type="module" src="{% static 'js/paraderos_map.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+    <header class="py-3 ps-5 border-bottom mb-5">
+        <div class="container-fluid">
+            <div class="row d-flex flex-row justify-content-between align-items-center">
+                <div class="col-md-4">
+                    <h4 class="text-primary fw-bold">Gestionar paraderos</h4>
+                    <small class="text-muted">Define los paraderos de inicio y final de tus rutas</small>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'crearParadero' %}" class="btn btn-primary">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span class="fw-bold">Agregar nuevo paradero</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container d-flex flex-column flex-fill">
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NOMBRE</th>
+                        <th>RUTAS</th>
+                        <th class="text-center">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paradero in paraderos_paginator %}
+                        <tr>
+                            <td class="text-primary fw-bold">{{ paradero.codigo }}</td>
+                            <td>{{ paradero.paradero.nombre }}</td>
+                            <td>{{ paradero.cantidad_rutas }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="crear/{{ ruta.id }}" class="btn btn-link text-primary p-0 btn-update">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </a>
+
+                                    <button class="btn btn-link text-danger p-0 btn-delete" data-id="{{ ruta.id }}">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row d-flex flex-row justify-content-between justify-content-end mt-auto mb-5">
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                {% if paraderos_paginator.has_previous%}
+                    <a class="text-center"
+                       href="?page={{ paraderos_paginator.previous_page_number }}">
+                        <i class="fa-solid fa-angle-left"></i>
+                        <span>Anterior</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                <span>{{ paraderos_paginator.number }} de {{ paraderos_paginator.paginator.num_pages }}</span>
+            </div>
+            <div class="col-md-3 d-flex flex-row justify-content-center">
+                {% if paraderos_paginator.has_next%}
+                    <a class="text-center" href="?page={{ paraderos_paginator.next_page_number }}">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+            {% if paraderos_paginator.has_next %}
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

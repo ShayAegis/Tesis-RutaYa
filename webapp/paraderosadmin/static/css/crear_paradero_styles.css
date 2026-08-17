@@ -1,0 +1,19 @@
+#map {
+    height: 500px;
+    border-radius: 10px;
+    cursor: crosshair;
+}
+
+.paradero-marker {
+    width: 18px;
+    height: 18px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background-color: #0d6efd;
+    border: 2px solid white;
+    box-shadow: 0 0 3px rgba(0,0,0,0.4);
+}
+
+.paradero-marker-existente {
+    background-color: #6c757d;
+}

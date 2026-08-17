@@ -1,0 +1,5 @@
+.nav-active{
+    border-radius: 10px;
+    background-color: lightgray;
+    font-weight: bold; !important;
+}
