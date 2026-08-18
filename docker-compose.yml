@@ -6,9 +6,9 @@ services:
       - .env 
     restart: always
     expose: 
-      - "8000"
+      - "8001"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -34,9 +34,9 @@ services:
       - .env
     restart: always
     expose:
-      - "8080"
+      - "8081"
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -54,7 +54,9 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     expose:
-      - ${DB_PORT}
+      - "5433"
+    ports:
+      - "5433:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -66,8 +68,10 @@ services:
     image: redis:latest
     restart: always
     expose:
-      - ${REDIS_PORT}
-  mongo:
+      - "5380"
+    ports:
+      - "5380:${REDIS_PORT}"
+  mongo: 
     image: mongo:8
     restart: always
     environment:
