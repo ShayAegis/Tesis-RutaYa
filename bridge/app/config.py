@@ -1,4 +1,5 @@
-import os 
+import os
+import uuid
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -15,7 +16,7 @@ MQTT_PORT = _env_int("MQTT_PORT", 1883)
 MQTT_TOPIC = f"{os.getenv("MQTT_BASETOPIC") or None}/#"
 MQTT_USERNAME = os.getenv("MQTT_USERNAME") or None
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD") or None
-MQTT_CLIENT_ID = os.getenv("MQTT_CLIENT_ID", "mqtt-mongodb-bridge")
+MQTT_CLIENT_ID = os.getenv("MQTT_CLIENT_ID", f"mqtt-mongodb-bridge-{uuid.uuid4().hex[:8]}")
 MQTT_KEEPALIVE = _env_int("MQTT_KEEPALIVE", 60)
 MQTT_QOS = _env_int("MQTT_QOS", 1)
 
