@@ -27,3 +27,7 @@ class CalculadorGeometria(ABC):
     @abstractmethod
     def punto_intersecta_trayecto(self,punto: Coordenada, trayecto: list[Coordenada], buffer: float = 0) -> bool:
         pass
+
+    @abstractmethod
+    def punto_abordaje(self, trayecto: list[Coordenada], punto: Coordenada) -> Coordenada:
+        pass

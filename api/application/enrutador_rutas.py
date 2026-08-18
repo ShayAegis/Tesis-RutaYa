@@ -64,4 +64,4 @@ async def buscar_ruta_cercana(origin_lat:float,origin_lon:float,
         itinerario, retorno = await construir_itinerario_servicio.construir(ruta,busqueda)
         rutas_itinerarios.append((RutaEncontrada(ruta=ruta,retorno=retorno),itinerario))
 
-    return RutaDTO.lista_desde_dominio(rutas_itinerarios)
+    return RutaDTO.lista_desde_dominio(rutas_itinerarios, busqueda.origen, calculador)

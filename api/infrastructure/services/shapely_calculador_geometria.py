@@ -36,3 +36,9 @@ class ShapelyCalculadorGeometria(CalculadorGeometria):
 
     def punto_intersecta_trayecto(self,punto: Coordenada, trayecto: list[Coordenada], buffer: float = 0) -> bool:
         return Point(punto.lon, punto.lat).buffer(buffer).intersects(_a_linea(trayecto))
+
+    def punto_abordaje(self, trayecto: list[Coordenada], punto: Coordenada) -> Coordenada:
+        linea = _a_linea(trayecto)
+        distancia = linea.project(Point(punto.lon, punto.lat))
+        punto_proyectado = linea.interpolate(distancia)
+        return Coordenada(lat=punto_proyectado.y, lon=punto_proyectado.x)
