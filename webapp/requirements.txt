@@ -8,3 +8,4 @@ psycopg==3.3.4
 pymongo==4.17.0
 redis==8.1.0
 sqlparse==0.5.5
+whitenoise==6.12.0
