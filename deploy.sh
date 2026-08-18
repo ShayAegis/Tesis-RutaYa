@@ -3,7 +3,7 @@
 set -e 
 
 echo -e "\e[1;33m[INFO] Levantando contenedores de Docker\e[0m"
-docker compose up -d
+docker compose up -d --build
 echo -e "\e[1;32m[SUCCESS] Contenedores levantados exitosamente\e[0m"
 
 echo -e "\e[1;33m[INFO] Ejecutando migraciones de Django\e[0m"
