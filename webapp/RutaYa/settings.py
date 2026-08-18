@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
 env = environ.Env()
 environ.Env.read_env(BASE_DIR.parent / ".env")
 
-DEBUG = True
+DEBUG = not env.bool("PRODUCTION", default=False)
                                                         
 # Application definition
 
