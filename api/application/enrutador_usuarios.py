@@ -3,6 +3,7 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from application.adapters.bus_cercano_adapter import BusCercanoAdapter
 from application.dto.rutas_dto import BusCercanoDTO, RutaFavoritaDTO
 from application.dto.usuario_dto import UsuarioCreadoDTO, UsuarioDTO
 from application.models.error_response import ErrorResponse
@@ -85,10 +86,10 @@ async def crear_usuario(
     return UsuarioCreadoDTO.desde_dominio(usuario_creado)
 
 async def _bus_cercano_para_favorita(
-    caso_uso_bus_cercano: BuscarBusCercanoPorRuta, ruta: Ruta, lat: float, lon: float,
+    adapter_bus_cercano: BusCercanoAdapter, ruta: Ruta, lat: float, lon: float,
 ) -> BusCercanoDTO | None:
     candidatos = [
-        await caso_uso_bus_cercano.ejecutar(lat, lon, ruta.codigo, vuelta)
+        await adapter_bus_cercano.ejecutar(lat, lon, ruta.codigo, vuelta)
         for vuelta in (False, True)
     ]
     candidatos_encontrados = [candidato for candidato in candidatos if candidato is not None]
@@ -112,11 +113,12 @@ async def obtener_rutas_favoritas(usuario: Annotated[Usuario,Depends(obtener_usu
         return [RutaFavoritaDTO.desde_dominio(ruta) for ruta in rutas_favoritas_encontradas]
 
     caso_uso_bus_cercano = BuscarBusCercanoPorRuta(repositorio_buses, repositorio, calculador)
+    adapter_bus_cercano = BusCercanoAdapter(caso_uso_bus_cercano, CalculadorEtaBus(calculador, repositorio_buses))
 
     return [
         RutaFavoritaDTO.desde_dominio(
             ruta,
-            await _bus_cercano_para_favorita(caso_uso_bus_cercano, ruta, posicion_actual_lat, posicion_actual_lon),
+            await _bus_cercano_para_favorita(adapter_bus_cercano, ruta, posicion_actual_lat, posicion_actual_lon),
         )
         for ruta in rutas_favoritas_encontradas
     ]
