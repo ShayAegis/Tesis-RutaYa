@@ -11,11 +11,12 @@ from domain.entities.ruta import Ruta
 from domain.repositories.repositorio_buses import RepositorioBuses
 from domain.repositories.repositorio_usuarios import RepositorioUsuarios
 from domain.repositories.repositorio_rutas import RutasRepositorio
+from domain.servicios.calculador_eta_bus import CalculadorEtaBus
 from domain.servicios.calculador_geometria import CalculadorGeometria
 from domain.usecase.agregar_ruta_favorita import AgregarRutaFavorita
 from domain.usecase.buscar_bus_cercano_por_ruta import BuscarBusCercanoPorRuta
 from domain.usecase.crear_usuario import CrearUsuario, UsuarioYaExisteError
-from domain.usecase.eliminar_ruta_favorita import EliminarRutaFavorita
+from domain.usecase.eliminar_ruta_favorita import EliminarRutaFavorita, RutaNoFavoritaError
 from domain.usecase.obtener_rutas_favoritas import ObtenerRutasFavoritas
 from infrastructure.dependencias import (
     obtener_calculador_geometria,
@@ -144,8 +145,17 @@ async def agregar_ruta_favorita(usuario: Annotated[Usuario,Depends(obtener_usuar
                             detail=f"No se pudo marcar la ruta como favorita: {ex}")
 
 
-@enrutador.delete("/me/rutas/favoritas/{ruta_id}",status_code=status.HTTP_204_NO_CONTENT)
+@enrutador.delete("/me/rutas/favoritas/{ruta_id}",status_code=status.HTTP_204_NO_CONTENT,
+                   responses={
+                       404:{
+                           "model": ErrorResponse,
+                           "description":"La ruta no estaba marcada como favorita"
+                       }
+                   })
 async def eliminar_ruta_favorita(usuario: Annotated[Usuario,Depends(obtener_usuario_actual)],
                                  ruta_id: int, repositorio: RutasRepositorio = Depends(obtener_repositorio_rutas)):
     caso_uso = EliminarRutaFavorita(repositorio)
-    caso_uso.ejecutar(usuario,ruta_id)
+    try:
+        caso_uso.ejecutar(usuario,ruta_id)
+    except RutaNoFavoritaError as ex:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=str(ex))
