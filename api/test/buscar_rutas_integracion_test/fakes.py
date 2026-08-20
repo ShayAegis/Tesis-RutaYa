@@ -1,6 +1,7 @@
+from domain.entities.busqueda_ruta import BusquedaRuta
 from domain.entities.caminata import Caminata
 from domain.entities.coordenada import Coordenada
-from domain.entities.models import BusquedaRuta, Ruta
+from domain.entities.ruta import Ruta
 from domain.repositories.repositorio_rutas import RutasRepositorio
 
 
@@ -12,6 +13,9 @@ class FakeRutasRepositorio(RutasRepositorio):
 
     def buscar_cercana(self, busqueda: BusquedaRuta) -> list[Ruta]:
         return self._rutas
+
+    def obtener_ruta_por_codigo(self, codigo: str) -> Ruta | None:
+        return next((ruta for ruta in self._rutas if ruta.codigo == codigo), None)
 
     async def calcular_caminata(self, punto_origen: Coordenada, punto_destino: Coordenada) -> Caminata:
         return Caminata(

@@ -3,7 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from infrastructure.dependencias import obtener_repositorio_usuarios
-from test.usuarios_test.fakes import FakeRepositorioUsuarios
+from test.usuarios_integracion_test.fakes import FakeRepositorioUsuarios
 
 from main import aplicacion
 
