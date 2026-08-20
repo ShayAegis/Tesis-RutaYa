@@ -12,6 +12,7 @@ from domain.entities.busqueda_ruta import BusquedaRuta
 from domain.entities.caminata import Caminata
 from domain.entities.models import Coordenada
 from domain.repositories.repositorio_rutas import RutasRepositorio
+from domain.usecase.eliminar_ruta_favorita import RutaNoFavoritaError
 from infrastructure.models.osrm_ruta import OsrmRutaRespuesta
 from infrastructure.models.ruta import Ruta, rutas_favoritas
 from infrastructure.models.usuario import Usuario
@@ -115,5 +116,8 @@ class RutasRepositorioPostgreSql(RutasRepositorio):
         stmt = (delete(rutas_favoritas)
                 .where(and_(rutas_favoritas.c.usuario_id == usuario.id,
                             rutas_favoritas.c.ruta_id == ruta)))
-        self.db.execute(stmt)
+        resultado = self.db.execute(stmt)
+        if resultado.rowcount == 0:
+            self.db.rollback()
+            raise RutaNoFavoritaError(ruta)
         self.db.commit()
