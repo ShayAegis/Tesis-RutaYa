@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, status, Depends, HTTPException
+from application.adapters.bus_cercano_adapter import BusCercanoAdapter
 from application.dto.rutas_dto import BusCercanoDTO, RutaDTO
 from application.models.error_response import ErrorResponse
 from domain.entities.busqueda_ruta import BusquedaRuta
@@ -10,6 +11,7 @@ from domain.entities.models import Coordenada
 from domain.exceptions.puntos_muy_cercanos_excepcion import PuntosMuyCercanos
 from domain.repositories.repositorio_buses import RepositorioBuses
 from domain.repositories.repositorio_rutas import RutasRepositorio
+from domain.servicios.calculador_eta_bus import CalculadorEtaBus
 from domain.servicios.calculador_geometria import CalculadorGeometria
 from domain.servicios.construir_itinerario import ConstruirItinerarioServicio
 from domain.usecase.buscar_bus_cercano_por_ruta import BuscarBusCercanoPorRuta
@@ -24,7 +26,8 @@ async def bus_cercano(ruta_id:str, lat:float, lon:float, vuelta:bool,
                       calculador: CalculadorGeometria = Depends(obtener_calculador_geometria)):
 
     caso_uso = BuscarBusCercanoPorRuta(repositorio_buses,repositorio_rutas,calculador)
-    bus_cercano_encontrado = await caso_uso.ejecutar(lat,lon,ruta_id,vuelta)
+    adapter = BusCercanoAdapter(caso_uso, CalculadorEtaBus(calculador, repositorio_buses))
+    bus_cercano_encontrado = await adapter.ejecutar(lat,lon,ruta_id,vuelta)
 
     if bus_cercano_encontrado is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
