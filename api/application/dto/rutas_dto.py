@@ -42,14 +42,9 @@ class PiernaDTO(BaseModel):
     distancia: float
     duracion: float
     peso: float
-    punto_abordaje: Coordenada | None = None
 
     @classmethod
-    def desde_dominio(cls, pierna: Pierna, origen: Coordenada, calculador: CalculadorGeometria) -> "PiernaDTO":
-        punto_abordaje = None
-        if isinstance(pierna, BusPierna):
-            punto_abordaje = calculador.punto_abordaje(pierna.coordenadas, origen)
-
+    def desde_dominio(cls, pierna: Pierna) -> PiernaDTO:
         return cls(
             perfil=pierna.perfil,
             geometria=polyline.encode([(c.lat, c.lon) for c in pierna.coordenadas]),
@@ -58,33 +53,39 @@ class PiernaDTO(BaseModel):
             distancia=pierna.distancia,
             duracion=pierna.duracion,
             peso=pierna.peso,
-            punto_abordaje=punto_abordaje,
         )
 
 class ViajeDTO(BaseModel):
-    piernas: List[PiernaDTO]
+    itinerario: List[PiernaDTO]
     distancia: float
     eta: float
     peso: float
     numero_transbordos: int
+    punto_abordaje: Coordenada | None = None
 
     @classmethod
     def desde_dominio(cls, itinerario: Itinerario, origen: Coordenada, calculador: CalculadorGeometria) -> "ViajeDTO":
+        punto_abordaje = None
+        primer_bus = next((pierna for pierna in itinerario.piernas if isinstance(pierna, BusPierna)), None)
+        if primer_bus is not None:
+            punto_abordaje = calculador.punto_abordaje(primer_bus.coordenadas, origen)
+
         return cls(
-            piernas=[PiernaDTO.desde_dominio(pierna, origen, calculador) for pierna in itinerario.piernas],
+            itinerario=[PiernaDTO.desde_dominio(pierna) for pierna in itinerario.piernas],
             distancia=itinerario.distancia,
             eta=itinerario.eta,
             peso=itinerario.peso,
             numero_transbordos=itinerario.numero_transbordos,
+            punto_abordaje=punto_abordaje,
         )
 
-class RutaDTO(BaseModel):
+class RutasEncontradasDTO(BaseModel):
     metadata: RutaMetadataDTO
     viaje: ViajeDTO
     retorno: bool
 
     @classmethod
-    def desde_dominio(cls, ruta_encontrada: RutaEncontrada, itinerario: Itinerario, origen: Coordenada, calculador: CalculadorGeometria) -> "RutaDTO":
+    def desde_dominio(cls, ruta_encontrada: RutaEncontrada, itinerario: Itinerario, origen: Coordenada, calculador: CalculadorGeometria) -> "RutasEncontradasDTO":
         return cls(
             metadata=RutaMetadataDTO.desde_dominio(ruta_encontrada.ruta),
             viaje=ViajeDTO.desde_dominio(itinerario, origen, calculador),
@@ -92,7 +93,8 @@ class RutaDTO(BaseModel):
         )
 
     @classmethod
-    def lista_desde_dominio(cls, rutas_itinerarios: list[tuple[RutaEncontrada,Itinerario]], origen: Coordenada, calculador: CalculadorGeometria) -> List["RutaDTO"]:
+    def lista_desde_dominio(cls, rutas_itinerarios: list[tuple[RutaEncontrada,Itinerario]], origen: Coordenada, calculador: CalculadorGeometria) -> List[
+        "RutasEncontradasDTO"]:
         rutas_dto = [cls.desde_dominio(ruta_itinerario[0],ruta_itinerario[1],origen,calculador) for ruta_itinerario in rutas_itinerarios]
         return sorted(rutas_dto, key=lambda ruta_dto: ruta_dto.viaje.peso)
 
