@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, status, Depends, HTTPException
 from application.adapters.bus_cercano_adapter import BusCercanoAdapter
-from application.dto.rutas_dto import BusCercanoDTO, RutaDTO
+from application.dto.rutas_dto import BusCercanoDTO, RutasEncontradasDTO
 from application.models.error_response import ErrorResponse
 from domain.entities.busqueda_ruta import BusquedaRuta
 from domain.entities.itinerario import Itinerario
@@ -35,7 +35,7 @@ async def bus_cercano(ruta_id:str, lat:float, lon:float, vuelta:bool,
     return bus_cercano_encontrado
 
 @enrutador.get("/buscar-cercana",status_code=status.HTTP_200_OK,tags=["rutas"],
-               response_model=List[RutaDTO],
+               response_model=List[RutasEncontradasDTO],
                responses={404:{
                    "model":ErrorResponse,
                    "description":"Ruta no encontrada"
@@ -67,4 +67,4 @@ async def buscar_ruta_cercana(origin_lat:float,origin_lon:float,
         itinerario, retorno = await construir_itinerario_servicio.construir(ruta,busqueda)
         rutas_itinerarios.append((RutaEncontrada(ruta=ruta,retorno=retorno),itinerario))
 
-    return RutaDTO.lista_desde_dominio(rutas_itinerarios, busqueda.origen, calculador)
+    return RutasEncontradasDTO.lista_desde_dominio(rutas_itinerarios, busqueda.origen, calculador)
