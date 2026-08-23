@@ -56,7 +56,7 @@ services:
     expose:
       - "5433"
     ports:
-      - "5433:${DB_PORT}"
+      - "127.0.0.1:5433:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -70,7 +70,7 @@ services:
     expose:
       - "5380"
     ports:
-      - "5380:${REDIS_PORT}"
+      - "127.0.0.1:5380:${REDIS_PORT}"
   mongo: 
     image: mongo:8
     restart: always
