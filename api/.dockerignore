@@ -1,0 +1,10 @@
+*firebase-adminsdk*.json
+google-services.json
+.env
+.env_test
+venv/
+__pycache__/
+*.pyc
+.git/
+.idea/
+test/
