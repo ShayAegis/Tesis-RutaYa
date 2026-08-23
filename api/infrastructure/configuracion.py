@@ -27,7 +27,8 @@ class Configuracion(BaseSettings):
     mqtt_qos: int
     places_api_key: str
     osrm_host:str
-    firebase_credentials_path:str
+    firebase_credentials_path: str | None = None
+    firebase_credentials_json: str | None = None
     class Config:
         env_file = BASE_DIR.parent / ".env"
         extra = "ignore"
