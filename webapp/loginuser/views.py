@@ -1,8 +1,10 @@
 from django.shortcuts import render,redirect
 from django.http import HttpRequest
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 from .forms import LoginForm
 def loginuser(request:HttpRequest):
+
+    error = None
 
     if request.method == 'POST':
         requestBody = request.POST
@@ -13,9 +15,13 @@ def loginuser(request:HttpRequest):
             login(request, user)
             return redirect("busAdmin")
         else:
+            error = "Correo o contraseña incorrecta"
 
-            print("no se pudo autenticar")
-            
     return render(request,"login.html",{
-        "loginForm": LoginForm()
+        "loginForm": LoginForm(),
+        "error": error
     })
+
+def cerrar_sesion(request:HttpRequest):
+    logout(request)
+    return redirect("login")
