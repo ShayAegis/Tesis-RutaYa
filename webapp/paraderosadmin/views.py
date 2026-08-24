@@ -31,6 +31,7 @@ class ParaderosAdminView(View,LoginRequiredMixin):
         paraderos = (EmpresaParadero.objects.filter(empresa_id=empresaId)
                      .select_related("paradero")
                      .annotate(cantidad_rutas=Coalesce(Subquery(cantidad_rutas_subquery), 0))
+                     .order_by("codigo")
                      .all()
                     )
         page = request.GET.get("page",1)
