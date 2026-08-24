@@ -49,7 +49,7 @@ class ConductoresAdminView(View, LoginRequiredMixin):
 
         conductores = Conductor.objects.annotate(
             bus_asignado=Subquery(bus_asignado_subquery)
-        )
+        ).order_by("cedula")
         conductores_paginator = Paginator(conductores, 9)
 
         return render(request, "conductores.html", {
