@@ -30,8 +30,14 @@ SECRET_KEY = 'django-insecure-77w(j43@3t$vcw@(rb3ouxy%8(jzqe#l$-#ba#ehq0n9t%nd-v
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
+    "dashboard.tesis.rutaya.xyz"
+]
+
+CSRF_TRUSTED_ORIGINS = [
     "https://dashboard.tesis.rutaya.xyz"
 ]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 env = environ.Env()
 environ.Env.read_env(BASE_DIR.parent / ".env")
