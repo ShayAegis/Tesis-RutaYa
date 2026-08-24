@@ -18,4 +18,4 @@ COPY . .
 
 EXPOSE "8080"
 
-CMD ["gunicorn", "RutaYa.wsgi:application","--bind","0.0.0.0:8080"]
+CMD python manage.py collectstatic --noinput && gunicorn RutaYa.wsgi:application --bind 0.0.0.0:8080
