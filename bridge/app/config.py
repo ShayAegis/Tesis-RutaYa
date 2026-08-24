@@ -2,6 +2,7 @@ import os
 import uuid
 from dotenv import load_dotenv
 from pathlib import Path
+from urllib.parse import quote_plus
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR.parent.parent / ".env")
@@ -20,7 +21,9 @@ MQTT_CLIENT_ID = os.getenv("MQTT_CLIENT_ID", f"mqtt-mongodb-bridge-{uuid.uuid4()
 MQTT_KEEPALIVE = _env_int("MQTT_KEEPALIVE", 60)
 MQTT_QOS = _env_int("MQTT_QOS", 1)
 
-MONGO_URI = f"mongodb://{os.getenv("MONGODB_USER")}:{os.getenv("MONGODB_PASSWORD")}@{os.getenv("MONGODB_HOST")}:{os.getenv("MONGODB_PORT")}/{os.getenv("MONGODB_NAME")}?authSource=admin"
+MONGODB_USER = quote_plus(os.getenv("MONGODB_USER", ""))
+MONGODB_PASSWORD = quote_plus(os.getenv("MONGODB_PASSWORD", ""))
+MONGO_URI = f"mongodb://{MONGODB_USER}:{MONGODB_PASSWORD}@{os.getenv("MONGODB_HOST")}:{os.getenv("MONGODB_PORT")}/{os.getenv("MONGODB_NAME")}?authSource=admin"
 MONGO_DB = os.getenv("MONGODB_NAME", "tesis")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "bus_positions_history")
 
