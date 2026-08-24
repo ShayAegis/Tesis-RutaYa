@@ -27,6 +27,7 @@ class RutasAdminView(View,LoginRequiredMixin):
             Ruta.objects
             .filter(empresa_id=empresaId)
             .select_related("paradero_inicio","paradero_final")
+            .order_by("codigo")
             .annotate(
                 cantidad_buses=Count(
                     "asignaciones_ruta__bus",
