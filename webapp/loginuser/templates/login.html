@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <title>Document</title>
+    <title>Iniciar Sesión</title>
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
@@ -14,12 +14,7 @@
                 <div class="card shadow">
                     <div class="card-body p-4">
                         <h4 class="text-primary mb-3">Iniciar sesión</h4>
-                        {% if error %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                        {% endif %}
-                        <form action="" method="post">
+                       <form action="" method="post">
                             {% csrf_token %}
                             <div class="form-group mb-3">
                                 <label for="{{ loginForm.correo.id_for_label }}">{{ loginForm.correo.label_tag }}</label>
@@ -30,6 +25,12 @@
                                 {{ loginForm.contrasena }}
                             </div>
                             <input class="btn btn-primary mt-3 w-100" type="submit" value="Iniciar Sesión">
+			{% if error %}
+			    <div class="alert alert-danger" role="alert">
+				    {{ error }}
+			    </div>
+			{% endif %}
+	 
                         </form>
                     </div>
 
