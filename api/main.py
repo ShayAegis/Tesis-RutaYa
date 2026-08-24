@@ -20,7 +20,8 @@ aplicacion = FastAPI(
     openapi_url=None if produccion else "/openapi.json"
 )
 
-from application.middleware.firebase_app_check import comprobar_token_firebase
+if produccion:
+    from application.middleware.firebase_app_check import comprobar_token_firebase
 
 
 if configuracion.firebase_credentials_json:
