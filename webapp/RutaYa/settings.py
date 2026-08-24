@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-77w(j43@3t$vcw@(rb3ouxy%8(jzqe#l$-#ba#ehq0n9t%nd-v
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "dashboard.tesis.rutaya.xyz"
+    "https://dashboard.tesis.rutaya.xyz"
 ]
 
 env = environ.Env()
