@@ -3,6 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 class Configuracion(BaseSettings):
+    production: bool
     oauth2_secret_key: str
     oauth2_algorithm: str
     oauth2_access_token_expiration_minutes: int
