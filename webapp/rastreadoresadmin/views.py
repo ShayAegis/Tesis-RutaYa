@@ -39,7 +39,7 @@ class RastreadoresAdminView(View, LoginRequiredMixin):
 
         page = request.GET.get("page", 1)
 
-        rastreadores = Rastreador.objects.filter(empresa_id=empresa_id)
+        rastreadores = Rastreador.objects.filter(empresa_id=empresa_id).order_by("serial")
         rastreadores_paginator = Paginator(rastreadores, 9)
 
         return render(request, "rastreadores.html", {
