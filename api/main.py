@@ -2,7 +2,7 @@ import json
 
 from fastapi import FastAPI
 
-from autenticacion import enrutador as login
+from autenticacion import decodificar_token, enrutador as login
 from infrastructure.configuracion import configuracion
 
 from application.enrutador_buses import enrutador as enrutador_buses
@@ -13,7 +13,12 @@ from application.enrutador_lugares import enrutador as enrutador_lugares
 import firebase_admin
 from firebase_admin import credentials
 
-aplicacion = FastAPI()
+produccion = configuracion.production
+aplicacion = FastAPI(
+    docs_url=None if produccion else "/docs",
+    redoc_url=None if produccion else "/redoc",
+    openapi_url=None if produccion else "/openapi.json"
+)
 
 from application.middleware.firebase_app_check import comprobar_token_firebase
 
