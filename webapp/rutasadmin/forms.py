@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
+from django.forms import formset_factory
 
 from paraderosadmin.models import Paradero
+from .models import HorarioOperacion
 
 class CrearRutas(forms.Form):
 
@@ -64,3 +66,42 @@ class CrearRutas(forms.Form):
             )
 
         return geom
+
+
+DIAS_SEMANA = HorarioOperacion.Dia.choices
+
+
+class HorarioOperacionForm(forms.Form):
+
+    dia = forms.IntegerField(widget=forms.HiddenInput())
+
+    hora_inicio = forms.TimeField(
+        required=False,
+        input_formats=['%H:%M'],
+        widget=forms.TimeInput(attrs={'type': 'time'}, format='%H:%M')
+    )
+
+    hora_fin = forms.TimeField(
+        required=False,
+        input_formats=['%H:%M'],
+        widget=forms.TimeInput(attrs={'type': 'time'}, format='%H:%M')
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        hora_inicio = cleaned_data.get("hora_inicio")
+        hora_fin = cleaned_data.get("hora_fin")
+
+        if bool(hora_inicio) != bool(hora_fin):
+            raise forms.ValidationError("Complete ambas horas o deje el día sin marcar.")
+
+        if hora_inicio and hora_fin and hora_inicio >= hora_fin:
+            raise forms.ValidationError("La hora de inicio debe ser anterior a la hora de fin.")
+
+        return cleaned_data
+
+    def is_activo(self):
+        return bool(self.cleaned_data.get("hora_inicio") and self.cleaned_data.get("hora_fin"))
+
+
+HorarioOperacionFormSet = formset_factory(HorarioOperacionForm, extra=7, max_num=7)
