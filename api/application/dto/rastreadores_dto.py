@@ -1,3 +1,5 @@
+from datetime import time
+
 from pydantic import BaseModel
 
 from domain.repositories.repositorio_rastreadores import EstadoOperativoRastreador
@@ -12,6 +14,8 @@ class EstadoRastreadorDTO(BaseModel):
     numero_bus: int
     empresa_id: int
     ruta: str
+    ruta_hora_inicio: time
+    ruta_hora_fin: time
     paradero_inicio: ParaderoDTO | None
     paradero_final: ParaderoDTO | None
 
@@ -21,6 +25,8 @@ class EstadoRastreadorDTO(BaseModel):
             numero_bus=estado.numero_bus,
             empresa_id=estado.empresa_id,
             ruta=estado.ruta_codigo,
+            ruta_hora_inicio=estado.ruta_hora_inicio,
+            ruta_hora_fin=estado.ruta_hora_fin,
             paradero_inicio=ParaderoDTO(**estado.paradero_inicio.model_dump()),
             paradero_final=ParaderoDTO(**estado.paradero_final.model_dump()),
         )
