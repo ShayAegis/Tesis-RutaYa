@@ -1,12 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, exists
 from sqlalchemy.orm import aliased, Session
 from geoalchemy2.functions import ST_X, ST_Y
 
 from domain.entities.models import Coordenada
+from domain.entities.rastreador import Rastreador as RastreadorDominio
 from domain.repositories.repositorio_rastreadores import RepositorioRastreadores, EstadoOperativoRastreador
-from infrastructure.models.bus import Bus, AsignacionRastreador, Empresa
+from infrastructure.models.bus import Bus
+from infrastructure.models.rastreador import AsignacionRastreador, Rastreador, SecretoRastreador
 from infrastructure.models.paradero import Paradero
 from infrastructure.models.ruta import AsignacionRuta, HorarioOperacion, Ruta
 
@@ -59,3 +61,48 @@ class RepositorioRastreadoresPostgreSql(RepositorioRastreadores):
             paradero_inicio = Coordenada(lat=resultado.paradero_inicio_lat, lon=resultado.paradero_inicio_lon),
             paradero_final = Coordenada(lat=resultado.paradero_final_lat, lon=resultado.paradero_final_lon)
         )
+
+    def obtener_rastreador_por_serial(self, serial: str) -> RastreadorDominio | None:
+        consulta = (
+            select(Rastreador)
+            .where(
+                Rastreador.serial == serial
+            )
+        )
+
+        rastreador = self.db.scalar(consulta)
+        if rastreador is None:
+            return None
+
+        return RastreadorDominio(
+           serial = rastreador.serial,
+           modelo = rastreador.modelo,
+           imei = rastreador.imei,
+           iccid = rastreador.iccid,
+           operador_red = rastreador.operador_red.nombre,
+           numero_sim = rastreador.numero_sim,
+           empresa = rastreador.empresa.nombre
+        )
+
+    def verificar_rastreador_registrado(self, serial: str) -> bool:
+        consulta = select(
+            exists().where(SecretoRastreador.rastreador_serial == serial)
+        )
+
+        return bool(self.db.scalar(consulta))
+
+    def registrar_secreto(self, serial: str, secreto_hasheado: str) -> None:
+        secreto = SecretoRastreador(
+            rastreador_serial=serial,
+            secreto_hash=secreto_hasheado,
+            issued_at=datetime.now(timezone(timedelta(hours=-5)))
+        )
+        self.db.add(secreto)
+        self.db.commit()
+
+    def obtener_hash_secreto(self, serial: str) -> str | None:
+        consulta = select(SecretoRastreador.secreto_hash).where(
+            SecretoRastreador.rastreador_serial == serial
+        )
+
+        return self.db.scalar(consulta)
