@@ -33,3 +33,36 @@ class Ruta(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.paradero_inicio.nombre, self.paradero_final.nombre)
+
+
+class HorarioOperacion(models.Model):
+
+    class Dia(models.IntegerChoices):
+        LUNES = 0, "LUN"
+        MARTES = 1, "MAR"
+        MIERCOLES = 2, "MIE"
+        JUEVES = 3, "JUE"
+        VIERNES = 4, "VIE"
+        SABADO = 5, "SAB"
+        DOMINGO = 6, "DOM"
+
+    ruta = models.ForeignKey(
+        Ruta,
+        on_delete=models.CASCADE,
+        related_name="horarios",
+    )
+
+    dia = models.IntegerField(choices=Dia.choices)
+
+    hora_inicio = models.TimeField()
+
+    hora_fin = models.TimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["ruta", "dia"], name="unique_dia_por_ruta")
+        ]
+        ordering = ["dia"]
+
+    def __str__(self):
+        return "{} - {}".format(self.ruta.codigo, self.get_dia_display())
