@@ -68,6 +68,30 @@ function setupParaderoAutocomplete(textInputId, tipo) {
 setupParaderoAutocomplete("id_punto_inicio_nombre", "inicio");
 setupParaderoAutocomplete("id_punto_final_nombre", "final");
 
+function setupHorariosToggle() {
+    document.querySelectorAll(".horario-dia").forEach((diaRow) => {
+        const toggle = diaRow.querySelector(".horario-toggle");
+        const horasContainer = diaRow.querySelector(".horario-horas");
+        if (!toggle || !horasContainer) return;
+
+        const horaInputs = horasContainer.querySelectorAll("input[type='time']");
+
+        function syncHoras() {
+            const activo = toggle.checked;
+            horasContainer.classList.toggle("d-none", !activo);
+            horaInputs.forEach((input) => {
+                input.disabled = !activo;
+                if (!activo) input.value = "";
+            });
+        }
+
+        toggle.addEventListener("change", syncHoras);
+        syncHoras();
+    });
+}
+
+setupHorariosToggle();
+
 const initialParaderos = window.initialParaderos ?? {};
 if (initialParaderos.inicio) {
     const { lat, lng, nombre } = initialParaderos.inicio;
