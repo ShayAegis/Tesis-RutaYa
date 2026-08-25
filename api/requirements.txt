@@ -50,6 +50,7 @@ numpy==2.5.1
 packaging==26.2
 paho-mqtt==2.1.0
 passlib==1.7.4
+bcrypt==4.0.1
 pluggy==1.6.0
 polyline==2.0.4
 proto-plus==1.28.3
