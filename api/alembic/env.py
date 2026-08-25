@@ -8,7 +8,8 @@ from infrastructure.configuracion import configuracion
 from infrastructure.models.base import Base
 from infrastructure.models.usuario import Usuario, RefreshToken
 from infrastructure.models.ruta import Ruta, AsignacionRuta, rutas_favoritas
-from infrastructure.models.bus import Bus, Empresa, Rastreador, OperadorRedMovil, AsignacionRastreador
+from infrastructure.models.bus import Bus, Empresa 
+from infrastructure.models.rastreador import Rastreador, OperadorRedMovil, AsignacionRastreador
 from infrastructure.models.paradero import Paradero
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -27,7 +28,7 @@ target_metadata = Base.metadata
 # (busadmin_*, loginuser_*, paraderosadmin_*, rutasadmin_*, rastreadoresadmin_*)
 # son creadas y migradas por Django; se excluyen del autogenerate para que
 # Alembic nunca intente dropearlas ni alterarlas.
-ALEMBIC_MANAGED_TABLES = {"refresh_token","usuario_rutafavorita"}
+ALEMBIC_MANAGED_TABLES = {"refresh_token","usuario_rutafavorita","secretorastreador"}
 
 
 def include_object(object, name, type_, reflected, compare_to):
