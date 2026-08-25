@@ -50,9 +50,34 @@
             <i class="fa-regular fa-trash-can"></i>
         </button>
     </div>
-    <div id="map" class="col-md-12 mb-5"></div>
     <form method="post" class="form">
         {% csrf_token %}
+        <div class="row">
+            <div id="map" class="col-md-8 mb-5"></div>
+            <div class="col-md-4 d-flex flex-column align-items-center gap-3">
+                <h5 class="text-center fw-bold m-3">Horario de operación</h5>
+                {{ horario_formset.management_form }}
+                {% for dia_label, horario_form in horarios %}
+                    <div class="d-flex flex-row gap-3 align-items-center horario-dia">
+                        <input type="checkbox" class="form-check-input horario-toggle"
+                               {% if horario_form.hora_inicio.value and horario_form.hora_fin.value %}checked{% endif %}>
+                        <label class="form-check-label fw-bold">{{ dia_label }}</label>
+                        {{ horario_form.dia }}
+                        <div class="d-flex flex-row gap-3 horario-horas">
+                            {{ horario_form.hora_inicio }}
+                            <p class="text-muted">a</p>
+                            {{ horario_form.hora_fin }}
+                        </div>
+                    </div>
+                    {% if horario_form.non_field_errors %}
+                        <small class="text-danger">{{ horario_form.non_field_errors.0 }}</small>
+                    {% endif %}
+                {% endfor %}
+                {% if horario_formset.non_form_errors %}
+                    <small class="text-danger">{{ horario_formset.non_form_errors.0 }}</small>
+                {% endif %}
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-3 d-flex flex-column gap-4">
                 <div class="form-group position-relative">
