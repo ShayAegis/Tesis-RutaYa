@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, time
 
-from sqlalchemy import String, Float, ForeignKey, DateTime, Table, Column, Integer
+from sqlalchemy import String, Float, ForeignKey, DateTime, Table, Column, Integer, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 
@@ -18,6 +18,15 @@ class AsignacionRuta(Base):
     bus: Mapped["Bus"] = relationship()
     ruta: Mapped["Ruta"] = relationship()
 
+class HorarioOperacion(Base):
+    __tablename__ = "rutasadmin_horariooperacion"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    dia: Mapped[int] = mapped_column(Integer,nullable=False)
+    hora_inicio:Mapped[time] = mapped_column(Time, nullable=False)
+    hora_fin: Mapped[time] = mapped_column(Time,nullable=False)
+    ruta_id: Mapped[int] = mapped_column(ForeignKey("rutasadmin_ruta.id"))
+    ruta: Mapped[Ruta] = relationship(back_populates="horarios_operacion")
+
 class Ruta(Base):
     __tablename__ = "rutasadmin_ruta"
 
@@ -33,7 +42,7 @@ class Ruta(Base):
     paradero_inicio: Mapped["Paradero"] = relationship(foreign_keys=[paradero_inicio_id])
     empresa: Mapped["Empresa"] = relationship()
     paradero_final: Mapped["Paradero"] = relationship(foreign_keys=[paradero_final_id])
-
+    horarios_operacion: Mapped[list[HorarioOperacion]] = relationship(back_populates="ruta")
 rutas_favoritas = Table(
     "usuario_rutafavorita",
     Base.metadata,
