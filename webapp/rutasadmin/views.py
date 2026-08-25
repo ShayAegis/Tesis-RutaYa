@@ -11,8 +11,8 @@ from django.db.models import Q ,Count
 from busadmin.models import AsignacionRuta
 from paraderosadmin.models import EmpresaParadero
 #App imports
-from .forms import CrearRutas
-from .models import Ruta
+from .forms import CrearRutas, HorarioOperacionFormSet, DIAS_SEMANA
+from .models import Ruta, HorarioOperacion
 
 class RutasAdminView(View,LoginRequiredMixin):
 
@@ -83,12 +83,71 @@ class RutasAdminView(View,LoginRequiredMixin):
             status=200
         )
 
+def _build_horario_formset(data=None, ruta: Ruta | None = None) -> HorarioOperacionFormSet:
+    if data is not None:
+        return HorarioOperacionFormSet(data)
+
+    if ruta is None:
+        initial = [{"dia": dia} for dia, _ in DIAS_SEMANA]
+    else:
+        horarios_por_dia = {
+            horario.dia: horario
+            for horario in HorarioOperacion.objects.filter(ruta=ruta)
+        }
+        initial = []
+        for dia, _ in DIAS_SEMANA:
+            horario = horarios_por_dia.get(dia)
+            if horario is None:
+                initial.append({"dia": dia})
+            else:
+                initial.append({
+                    "dia": dia,
+                    "hora_inicio": horario.hora_inicio,
+                    "hora_fin": horario.hora_fin,
+                })
+
+    return HorarioOperacionFormSet(initial=initial)
+
+
+def _zip_horarios(horario_formset: HorarioOperacionFormSet):
+    return list(zip((label for _, label in DIAS_SEMANA), horario_formset))
+
+
+def _guardar_horarios(ruta_id: int, horario_formset: HorarioOperacionFormSet) -> None:
+    dias_activos = set()
+
+    for horario_form in horario_formset:
+        dia = horario_form.cleaned_data["dia"]
+        if not horario_form.is_activo():
+            continue
+
+        dias_activos.add(dia)
+        HorarioOperacion.objects.update_or_create(
+            ruta_id=ruta_id,
+            dia=dia,
+            defaults={
+                "hora_inicio": horario_form.cleaned_data["hora_inicio"],
+                "hora_fin": horario_form.cleaned_data["hora_fin"],
+            },
+        )
+
+    (
+        HorarioOperacion.objects
+        .filter(ruta_id=ruta_id)
+        .exclude(dia__in=dias_activos)
+        .delete()
+    )
+
+
 class CrearRutaView(View,LoginRequiredMixin):
 
     def get(self,request: HttpRequest,idRuta:int|None = None) -> HttpResponse:
         if not idRuta:
+            horario_formset = _build_horario_formset()
             return render(request,"crear_rutas.html",{
-                "crearRutaForm":CrearRutas()
+                "crearRutaForm":CrearRutas(),
+                "horario_formset":horario_formset,
+                "horarios":_zip_horarios(horario_formset),
             })
         empresaId = request.user.empresa_id
         ruta = Ruta.objects.get(empresa_id=empresaId,id=idRuta)
@@ -101,18 +160,25 @@ class CrearRutaView(View,LoginRequiredMixin):
             "distancia": ruta.distancia_km,
             "recorrido": ruta.recorrido.geojson
         })
+        horario_formset = _build_horario_formset(ruta=ruta)
         return render(request,"crear_rutas.html",{
             "crearRutaForm":form,
             "puntoInicioParadero":ruta.paradero_inicio,
             "puntoFinalParadero":ruta.paradero_final,
+            "horario_formset":horario_formset,
+            "horarios":_zip_horarios(horario_formset),
         })
     def post(self,request: HttpRequest, idRuta:int|None=None) -> HttpResponse:
 
         empresaId = request.user.empresa_id
         form = CrearRutas(request.POST)
-        if not form.is_valid():
+        horario_formset = _build_horario_formset(data=request.POST)
+
+        if not form.is_valid() or not horario_formset.is_valid():
             return render(request,"crear_rutas.html",{
-                "crearRutaForm":form
+                "crearRutaForm":form,
+                "horario_formset":horario_formset,
+                "horarios":_zip_horarios(horario_formset),
             })
         codigo = form.cleaned_data["codigo"]
         punto_inicio = form.cleaned_data["punto_inicio"]
@@ -132,13 +198,15 @@ class CrearRutaView(View,LoginRequiredMixin):
             if paraderos_faltantes:
                 return render(request, "crear_rutas.html", {
                     "crearRutaForm": form,
+                    "horario_formset": horario_formset,
+                    "horarios": _zip_horarios(horario_formset),
                     "paradero_faltante_error": (
                         "El paradero {} no ha sido creado para tu empresa. "
                         "Ve a Paraderos y créalo antes de continuar."
                     ).format(", ".join(paraderos_faltantes)),
                 })
 
-            Ruta.objects.create(
+            ruta = Ruta.objects.create(
                 codigo= codigo,
                 paradero_inicio = punto_inicio,
                 paradero_final = punto_final,
@@ -146,6 +214,7 @@ class CrearRutaView(View,LoginRequiredMixin):
                 recorrido = recorrido,
                 empresa_id=empresaId
             )
+            _guardar_horarios(ruta.id, horario_formset)
 
             return redirect("crearRutas")
         if idRuta:
@@ -156,5 +225,6 @@ class CrearRutaView(View,LoginRequiredMixin):
                 distancia_km=distancia,
                 recorrido=recorrido,
             )
+            _guardar_horarios(idRuta, horario_formset)
 
         return redirect("crearRutas_update",idRuta=idRuta)
