@@ -9,6 +9,12 @@ class ParaderoDTO(BaseModel):
     lat: float
     lon: float
 
+class RastreadorRegistroInfo(BaseModel):
+    serial: str
+    imei: str
+
+class RastreadorSecretoDTO(BaseModel):
+    secreto: str
 
 class EstadoRastreadorDTO(BaseModel):
     numero_bus: int
