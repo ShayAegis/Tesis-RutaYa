@@ -24,15 +24,15 @@ if produccion:
     from application.middleware.firebase_app_check import comprobar_token_firebase
 
 
-if configuracion.firebase_credentials_json:
-    cred = credentials.Certificate(json.loads(configuracion.firebase_credentials_json))
-elif configuracion.firebase_credentials_path:
-    cred = credentials.Certificate(configuracion.firebase_credentials_path)
-else:
-    raise RuntimeError(
-        "Debe configurarse FIREBASE_CREDENTIALS_JSON o FIREBASE_CREDENTIALS_PATH"
-    )
-firebase_admin.initialize_app(cred)
+    if configuracion.firebase_credentials_json:
+        cred = credentials.Certificate(json.loads(configuracion.firebase_credentials_json))
+    elif configuracion.firebase_credentials_path:
+        cred = credentials.Certificate(configuracion.firebase_credentials_path)
+    else:
+        raise RuntimeError(
+            "Debe configurarse FIREBASE_CREDENTIALS_JSON o FIREBASE_CREDENTIALS_PATH"
+        )
+    firebase_admin.initialize_app(cred)
 
 aplicacion.include_router(login)
 aplicacion.include_router(enrutador_buses)
