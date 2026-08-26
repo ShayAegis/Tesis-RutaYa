@@ -14,7 +14,8 @@ def _env_int(name: str, default: int) -> int:
 
 MQTT_HOST = os.getenv("MQTT_HOST", "localhost")
 MQTT_PORT = _env_int("MQTT_PORT", 1883)
-MQTT_TOPIC = f"{os.getenv("MQTT_BASETOPIC") or None}/#"
+MQTT_BASETOPIC = os.getenv("MQTT_BASETOPIC") or None
+MQTT_TOPIC = f"{MQTT_BASETOPIC}/#"
 MQTT_USERNAME = os.getenv("MQTT_BRIDGE_USERNAME") or None
 MQTT_PASSWORD = os.getenv("MQTT_BRIDGE_PASSWORD") or None
 MQTT_CLIENT_ID = os.getenv("MQTT_BRIDGE_CLIENT_ID", f"mqtt-mongodb-bridge-{uuid.uuid4().hex[:8]}")
