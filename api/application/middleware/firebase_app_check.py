@@ -3,7 +3,7 @@ from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from firebase_admin import app_check
 
-RUTAS_EXCLUIDAS = ["/rastreadores/me","/docs"]
+RUTAS_EXCLUIDAS = ["/rastreadores/me","/rastreadores/aprovisionar","/broker/auth","/docs"]
 
 @aplicacion.middleware("http")
 async def comprobar_token_firebase(solicitud: Request,call_next):
