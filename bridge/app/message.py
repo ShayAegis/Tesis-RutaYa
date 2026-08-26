@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from app import config
 from app.models.tracker_payload import TrackerPayload
 from app.models.topic_fields import TopicFields
 
@@ -11,7 +12,7 @@ class InvalidMessage(ValueError):
     """Raised when an MQTT payload does not match the expected schema."""
 
 
-TOPIC_PREFIX = "testsim7000"
+TOPIC_PREFIX = config.MQTT_BASETOPIC
 
 _REQUIRED_FIELDS = (
     "lat",
