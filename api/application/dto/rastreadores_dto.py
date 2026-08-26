@@ -9,7 +9,7 @@ class ParaderoDTO(BaseModel):
     lat: float
     lon: float
 
-class RastreadorRegistroInfo(BaseModel):
+class RastreadorRegistroInfoDTO(BaseModel):
     serial: str
     imei: str
 

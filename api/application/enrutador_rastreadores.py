@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Header,status, HTTPException
-from application.dto.rastreadores_dto import RastreadorRegistroInfo, RastreadorSecretoDTO
+from application.dto.rastreadores_dto import RastreadorRegistroInfoDTO, RastreadorSecretoDTO
 from application.dto.rastreadores_dto import EstadoRastreadorDTO
 from domain.exceptions.rastreador_excepcion import (
     RastreadorNoExisteError,
@@ -19,7 +19,7 @@ enrutador = APIRouter(prefix="/rastreadores", tags=["rastreadores"])
 
 
 @enrutador.post("/aprovisionar",status_code=status.HTTP_200_OK,response_model=RastreadorSecretoDTO)
-async def aprovisionar(rastreador_info: RastreadorRegistroInfo, repositorio:RepositorioRastreadores = Depends(obtener_repositorio_rastreadores)):
+async def aprovisionar(rastreador_info: RastreadorRegistroInfoDTO, repositorio:RepositorioRastreadores = Depends(obtener_repositorio_rastreadores)):
     aprovisionador = AprovisionadorRastreador(repositorio)
     try:
         secreto = aprovisionador.aprovisionar(rastreador_info.serial,rastreador_info.imei)
