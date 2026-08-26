@@ -16,6 +16,13 @@ class RastreadorRegistroInfo(BaseModel):
 class RastreadorSecretoDTO(BaseModel):
     secreto: str
 
+class BrokerAuthDTO(BaseModel):
+    serial: str
+    secreto: str
+
+class BrokerAuthResultDTO(BaseModel):
+    result: str
+
 class EstadoRastreadorDTO(BaseModel):
     numero_bus: int
     empresa_id: int
