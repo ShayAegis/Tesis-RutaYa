@@ -10,6 +10,7 @@ from application.enrutador_rastreadores import enrutador as enrutador_rastreador
 from application.enrutador_rutas import enrutador as enrutador_rutas
 from application.enrutador_usuarios import enrutador as enrutador_usuarios
 from application.enrutador_lugares import enrutador as enrutador_lugares
+from application.enrutador_broker import enrutador as enrutador_broker
 import firebase_admin
 from firebase_admin import credentials
 
@@ -40,4 +41,4 @@ aplicacion.include_router(enrutador_rastreadores)
 aplicacion.include_router(enrutador_rutas)
 aplicacion.include_router(enrutador_usuarios)
 aplicacion.include_router(enrutador_lugares)
-
+aplicacion.include_router(enrutador_broker)
