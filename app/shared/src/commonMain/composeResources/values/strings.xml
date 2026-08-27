@@ -1,0 +1,35 @@
+<resources>
+    <string name="search_sheet_title">¿A dónde vamos hoy?</string>
+    <string name="search_route_button_title">Buscar Ruta</string>
+    <string name="origin_point_edit_text_placeholder">Elige punto de partida</string>
+    <string name="destination_point_edit_text_placeholder">Elige punto de destino</string>
+    <string name="walking_distance_slider_title">Distancia caminata:</string>
+    <string name="search_route_navbar">Buscar Ruta</string>
+    <string name="favorite_routes_navbar">Favoritas</string>
+    <string name="searching_routes_message">Buscando las mejores rutas...</string>
+    <string name="tracking_state_label_no_tracking">SIN BUSES</string>
+    <string name="tracking_state_label_connecting">CONECTANDO</string>
+    <string name="tracking_state_label_connected">EN CAMINO</string>
+    <string name="bus_eta_title">El bus llegará en</string>
+    <string name="bus_eta_minutes">%1$d min</string>
+    <string name="eta_label">Hora estimada de llegada:</string>
+    <string name="go_to_stop_btn_label">Ir al paradero</string>
+    <string name="route_not_found_title">No se encontraron rutas</string>
+    <string name="route_not_found_description">Lo sentimos, no se encontraron rutas intenta ajustar los filtros de búsqueda o cambiar los puntos de origen y destino</string>
+    <string name="route_not_found_go_back_btn">Editar búsqueda</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_subtitle">Inicia sesión para acceder a esta funcionalidad</string>
+    <string name="login_email_placeholder">Correo electrónico</string>
+    <string name="login_password_placeholder">Contraseña</string>
+    <string name="login_create_account">¿No tienes una cuenta?</string>
+    <string name="login_signup">Crear cuenta</string>
+    <string name="signup_name_placeholder">Ingrese sus nombres</string>
+    <string name="favorites_screen_title">Rutas Favoritas</string>
+    <string name="favorites_empty_title">Aún no tienes favoritos</string>
+    <string name="favorites_empty_description">Guarda tus lugares frecuentes para encontrarlos más rápido la próxima vez</string>
+    <string name="favorite_remove_content_description">Quitar de favoritos</string>
+    <string name="favorite_bus_estimated_arrival_time">Llegada estimada</string>
+    <string name="signup_login_label">¿Ya tienes una cuenta?</string>
+    <string name="signup_login_textbtn">Iniciar sesión</string>
+
+</resources>

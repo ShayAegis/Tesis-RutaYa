@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "837751978125",
+    "project_id": "tesis-rutaya-d0fca",
+    "storage_bucket": "tesis-rutaya-d0fca.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837751978125:android:e18900803a44db67becac4",
+        "android_client_info": {
+          "package_name": "com.shaydev.rutayatesis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUcqU7yKH25iyXn38N2661V5W4sb-o-24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
