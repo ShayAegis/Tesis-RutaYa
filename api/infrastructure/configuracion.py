@@ -17,6 +17,7 @@ class Configuracion(BaseSettings):
     redis_port: int
     redis_password: str
     redis_db: int
+    redis_max_connections: int = 200
     mongodb_host: str
     mongodb_port: int
     mongodb_name: str
