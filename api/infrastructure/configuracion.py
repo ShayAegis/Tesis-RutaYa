@@ -30,6 +30,7 @@ class Configuracion(BaseSettings):
     osrm_host:str
     firebase_credentials_path: str | None = None
     firebase_credentials_json: str | None = None
+    broker_key: str
     class Config:
         env_file = BASE_DIR.parent / ".env"
         extra = "ignore"
