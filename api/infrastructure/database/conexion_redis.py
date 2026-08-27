@@ -8,7 +8,15 @@ _pool_async = redis_asyncio.ConnectionPool(host=configuracion.redis_host,
                                             port=configuracion.redis_port,
                                             password=configuracion.redis_password,
                                             db=0,
-                                            decode_responses=True)
+                                            decode_responses=True,
+                                            max_connections=configuracion.redis_max_connections)
+
+_pool_sincrono = redis.ConnectionPool(host=configuracion.redis_host,
+                                       port=configuracion.redis_port,
+                                       password=configuracion.redis_password,
+                                       db=configuracion.redis_db,
+                                       decode_responses=True,
+                                       max_connections=configuracion.redis_max_connections)
 
 def obtener_conexion_redis_async() -> redis_asyncio.Redis:
     return redis_asyncio.Redis(connection_pool=_pool_async)
@@ -17,13 +25,7 @@ def obtener_conexion_redis():
 
     logger = logging.getLogger(__name__)
 
-    pool = redis.ConnectionPool(host=configuracion.redis_host,
-                                port=configuracion.redis_port,
-                                password=configuracion.redis_password,
-                                db=configuracion.redis_db,
-                                decode_responses=True)
-
-    redis_cliente = redis.Redis(connection_pool=pool)
+    redis_cliente = redis.Redis(connection_pool=_pool_sincrono)
 
     with redis_cliente as redis_conexion:
         try:
