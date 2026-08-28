@@ -44,6 +44,7 @@ private const val ROUTE_BOUNDS_PADDING_PX = 96
 private fun routeBounds(
     originMarker: Point?,
     destinationMarker: Point?,
+    busMarker: Point?,
     routeLine: List<Point>,
     walkingLines: List<List<Point>>,
 ): LatLngBounds? {
@@ -51,6 +52,7 @@ private fun routeBounds(
     val points = buildList {
         originMarker?.let { add(it) }
         destinationMarker?.let { add(it) }
+        busMarker?.let { add(it) }
         addAll(routeLine)
         walkingLines.forEach { addAll(it) }
     }
@@ -207,8 +209,8 @@ actual fun PlatformMapView(
         mapView.invalidate()
     }
 
-    LaunchedEffect(originMarker, destinationMarker, routeLine, walkingLines) {
-        val bounds = routeBounds(originMarker, destinationMarker, routeLine, walkingLines)
+    LaunchedEffect(originMarker, destinationMarker, busMarker, routeLine, walkingLines) {
+        val bounds = routeBounds(originMarker, destinationMarker, busMarker, routeLine, walkingLines)
         if (bounds != null && (bounds.north > bounds.south || bounds.east > bounds.west)) {
             mapView.post {
                 mapView.zoomToBoundingBox(
