@@ -64,17 +64,21 @@ class SearchScreen : Screen {
             (routeSearchState as? RouteSearchState.Success)?.routes?.getOrNull(state.selectedRouteIndex)
 
         Box(modifier = Modifier.fillMaxSize()) {
-            PlatformMapView(
-                center = HomeViewModel.DefaultCenter,
-                zoom = HomeViewModel.DefaultZoom,
-                modifier = Modifier.fillMaxSize(),
-                originMarker = state.originPoint,
-                destinationMarker = state.destinationPoint,
-                busMarker = state.busTrackingData?.location,
-                busBearing = state.busTrackingData?.azimuth,
-                routeLine = selectedRoute?.route?.busLegPolyline.orEmpty(),
-                walkingLines = selectedRoute?.route?.walkingLegPolylines.orEmpty(),
-            )
+
+            Column(modifier = Modifier.fillMaxWidth()){
+                PlatformMapView(
+                    center = HomeViewModel.DefaultCenter,
+                    zoom = HomeViewModel.DefaultZoom,
+                    modifier = Modifier.weight(0.7f),
+                    originMarker = state.originPoint,
+                    destinationMarker = state.destinationPoint,
+                    busMarker = state.busTrackingData?.location,
+                    busBearing = state.busTrackingData?.azimuth,
+                    routeLine = selectedRoute?.route?.busLegPolyline.orEmpty(),
+                    walkingLines = selectedRoute?.route?.walkingLegPolylines.orEmpty(),
+                )
+                Spacer(modifier = Modifier.weight(0.3f))
+            }
 
 
             BottomSheetContainer(
@@ -111,6 +115,7 @@ class SearchScreen : Screen {
                     RouteSearchState.Loading -> {
                         Column(
                             Modifier.fillMaxWidth()
+                                .height(200.dp)
                                 .padding(vertical = 20.dp, horizontal = 10.dp)
                         ) {
                             CircularProgressIndicator(
