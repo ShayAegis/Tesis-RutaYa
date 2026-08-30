@@ -32,6 +32,16 @@ class InitializeSystem {
             return true;
         }
 
+        bool _initProvisioning() {
+            String imei = _sim.getImei();
+            if (!_provisionDevice.execute(serialTracker, imei.c_str())) {
+                Serial.println("[PROV] Error: no se pudo aprovisionar el rastreador");
+                return false;
+            }
+            Serial.println("[PROV] Rastreador aprovisionado");
+            return true;
+        }
+
         bool _initBusInfo() {
             _trackerState = _getBusInfo.execute();
             if (_trackerState.numeroBus == 0) {
