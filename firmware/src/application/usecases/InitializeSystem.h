@@ -74,11 +74,12 @@ class InitializeSystem {
         }
 
     public:
-        InitializeSystem(Sim7000G& sim, GetBusInformationUsecase& getBusInfo) : _sim(sim), _getBusInfo(getBusInfo) {}
+        InitializeSystem(Sim7000G& sim, NvsStorage& nvs, ProvisionDeviceUsecase& provisionDevice, GetBusInformationUsecase& getBusInfo) : _sim(sim), _nvs(nvs), _provisionDevice(provisionDevice), _getBusInfo(getBusInfo) {}
 
         bool execute() {
             if (!_initModem())   return false;
             if (!_initNetwork()) return false;
+            if (!_initProvisioning()) return false;
             if (!_initBusInfo()) return false;
             if (!_initMqtt())    return false;
             _initTime();
