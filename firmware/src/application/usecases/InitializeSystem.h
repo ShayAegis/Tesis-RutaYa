@@ -1,12 +1,16 @@
 // application/usecases/InitializeSystem.h
 #pragma once
 #include "infrastructure/Sim7000.h"
+#include "infrastructure/NvsStorage.h"
 #include "application/usecases/GetBusInformation.h"
+#include "application/usecases/ProvisionDevice.h"
 #include "config.h"
 
 class InitializeSystem {
     private:
         Sim7000G& _sim;
+        NvsStorage& _nvs;
+        ProvisionDeviceUsecase& _provisionDevice;
         GetBusInformationUsecase& _getBusInfo;
         TrackerOperatingState _trackerState;
 
