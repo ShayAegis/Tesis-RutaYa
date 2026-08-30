@@ -54,7 +54,8 @@ class InitializeSystem {
 
         bool _initMqtt() {
             Serial.println("[MQTT] Conectando a broker...");
-            if (!_sim.mqttConnect("sim7000g", mqttBrokerUrl, mqttPort)) {
+            String secret = _nvs.getString(nvsSecretKey);
+            if (!_sim.mqttConnect("sim7000g", mqttBrokerUrl, mqttPort, serialTracker, secret.c_str())) {
                 Serial.println("[MQTT] Error: conexión al broker falló");
                 return false;
             }
