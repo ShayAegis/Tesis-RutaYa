@@ -3,15 +3,21 @@
 #include "application/usecases/PublishTrackingData.h"
 #include "application/usecases/GetBusInformation.h"
 #include "infrastructure/repository/GetBusInformationBySim.h"
+#include "infrastructure/repository/ProvisionRepositoryBySim.h"
+#include "infrastructure/NvsStorage.h"
+#include "application/usecases/ProvisionDevice.h"
 #include "config.h"
 
 int seq = 0;
 char mqttTopic[64];
 
 Sim7000G Sim(simRx,simTx,simPwrkey);
-BusInformationRepositoryBySim busInfoRepositorySim(Sim,busApiBaseUrl,busApiEndpoint);
+NvsStorage nvsStorage(nvsNamespace);
+ProvisionRepositoryBySim provisionRepositorySim(Sim,busApiBaseUrl,provisionEndpoint);
+ProvisionDeviceUsecase provisionDevice(provisionRepositorySim,nvsStorage);
+BusInformationRepositoryBySim busInfoRepositorySim(Sim,nvsStorage,busApiBaseUrl,busApiEndpoint);
 GetBusInformationUsecase getTrackerState(busInfoRepositorySim);
-InitializeSystem initSystem(Sim, getTrackerState);
+InitializeSystem initSystem(Sim, nvsStorage, provisionDevice, getTrackerState);
 PublishTrackingData publishTracking(Sim, seq, initSystem.getTrackerState());
 
 
