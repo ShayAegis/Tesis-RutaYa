@@ -21,6 +21,7 @@ class HTTPRequest{
         const char* _endpoint;
         HTTPMethod_t _httpMethod;
         std::vector<std::map<String, String>> _headers;
+        String _body;
 
     public:
         void setBaseUrl(const char* baseUrl){
@@ -78,6 +79,14 @@ class HTTPRequest{
             return _headers;
         }
 
+        void setBody(const char* body){
+            _body = String(body);
+        }
+
+        String getBody(){
+            return _body;
+        }
+
         HTTPRequest(const char* baseUrl, const char* endpoint, HTTPMethod_t method): _baseUrl(baseUrl), _endpoint(endpoint), _httpMethod(method){}
 };
 
@@ -104,6 +113,7 @@ class Sim7000G{
         void powerOn();
         void sendAT(const char* cmd);
         String readAT(unsigned long timeout_ms);
+        String sendATVerbose(const char* cmd, unsigned long timeout_ms);
         String readUntil(const char* token, unsigned long timeout_ms);
         bool isModemAlive();
         bool registerInNetwork();
@@ -117,7 +127,7 @@ class Sim7000G{
     public:
         bool begin();
         bool connectNetwork(const char* apn);
-        bool mqttConnect(const char* clientId,const char* mqttBrokerUrl,const int mqttPort);
+        bool mqttConnect(const char* clientId,const char* mqttBrokerUrl,const int mqttPort,const char* username,const char* password);
         bool pubMqtt(const char* topic,const char* payload,int qos);
         bool gpsBegin(bool aGps);
         bool syncNTP(const char* ntpServer);
