@@ -19,6 +19,7 @@ TrackingPayloadDto PublishTrackingData::_buildPayload(){
     float rssi = _sim.getRSSI();
     return {
         .serial  = _serialTracker,
+        .placa   = _trackerState.placa,
         .esVuelta  = _esVuelta,
         .lat       = latlng.lat,
         .lon       = latlng.lng,
@@ -33,6 +34,7 @@ TrackingPayloadDto PublishTrackingData::_buildPayload(){
 String PublishTrackingData::_serializePayload(TrackingPayloadDto data){
     JsonDocument json;
     json["serial"] = data.serial;
+    json["placa"] = data.placa;
     json["esVuelta"] = data.esVuelta;
     json["lat"] = data.lat;
     json["lon"] = data.lon;
