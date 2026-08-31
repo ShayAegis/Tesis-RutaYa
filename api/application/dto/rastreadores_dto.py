@@ -26,6 +26,7 @@ class BrokerAuthResultDTO(BaseModel):
 class EstadoRastreadorDTO(BaseModel):
     numero_bus: int
     empresa_id: int
+    placa: str
     ruta: str
     ruta_hora_inicio: time
     ruta_hora_fin: time
@@ -37,6 +38,7 @@ class EstadoRastreadorDTO(BaseModel):
         return cls(
             numero_bus=estado.numero_bus,
             empresa_id=estado.empresa_id,
+            placa=estado.placa,
             ruta=estado.ruta_codigo,
             ruta_hora_inicio=estado.ruta_hora_inicio,
             ruta_hora_fin=estado.ruta_hora_fin,
