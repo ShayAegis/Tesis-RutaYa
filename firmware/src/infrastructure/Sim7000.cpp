@@ -28,54 +28,80 @@ bool Sim7000G::begin() {
     return isModemAlive();
 }
 
+String Sim7000G::sendATVerbose(const char* cmd, unsigned long timeout_ms){
+    sendAT(cmd);
+    String response = readAT(timeout_ms);
+    Serial.println("[SIM][AT] " + String(cmd) + " -> " + response);
+    return response;
+}
+
 HTTPResponse Sim7000G::httpsBegin(HTTPRequest request){
 
     if(request.getBaseUrl().startsWith("https://")){
 
         sendAT("AT+CSSLCFG=\"sslversion\",1,3");
+        readAT(2000);
 
-        sendAT("AT+CSSLCFG=\"ciphersuite\",1,0,0xC02F");
+        sendAT("AT+CSSLCFG=\"ciphersuite\",1,0,0xC02C");
+        readAT(2000);
 
         String sniCmd = "AT+CSSLCFG=\"sni\",1,\"" + request.getHost() + "\"";
         sendAT(sniCmd.c_str());
+        readAT(2000);
 
         sendAT("AT+CSSLCFG=\"ignorertctime\",1,1");
+        readAT(2000);
 
         sendAT("AT+SHSSL=1,\"\"");
+        readAT(2000);
     }
 
     delay(1000);
     String setUrlCmd = "AT+SHCONF=\"URL\",\"" + request.getBaseUrl() + "\"";
     sendAT(setUrlCmd.c_str());
+    readAT(2000);
 
-    String setBodyLenCmd = "AT+SHCONF=\"BODYLEN\",1024";
-    sendAT(setBodyLenCmd.c_str());
+    sendAT("AT+SHCONF=\"BODYLEN\",1024");
+    readAT(2000);
 
-    String setHeadLen = "AT+SHCONF=\"HEADERLEN\",350";
-    sendAT(setHeadLen.c_str());
+    sendAT("AT+SHCONF=\"HEADERLEN\",350");
+    readAT(2000);
 
-    String setIpVer = "AT+SHCONF=\"IPVER\",0";
-    sendAT(setIpVer.c_str());
+    sendAT("AT+SHCONF=\"IPVER\",0");
+    readAT(2000);
 
     sendAT("AT+SHCONF=\"TIMEOUT\",30");
+    readAT(2000);
 
     sendAT("AT+SHCONN");
     String connResult = readAT(30000);
 
     if(connResult.indexOf("OK") == -1){
-        Serial.println("[SIM][HTTPS] FALLO DE CONEXION - abortando");
+        Serial.println("[SIM][HTTPS] FALLO DE CONEXION - abortando. Respuesta del módem: " + connResult);
         sendAT("AT+SHDISC");
+        readAT(2000);
         return HTTPResponse{"", -1};
     }
 
     sendAT("AT+SHSTATE?");
-    String state = readAT(2000);
+    readAT(2000);
 
     for(const auto& header : request.getHeaders()){
         for(const auto& entry : header){
             String headerCmd = "AT+SHAHEAD=\"" + entry.first + "\",\"" + entry.second + "\"";
             sendAT(headerCmd.c_str());
+            readAT(2000);
         }
+    }
+
+    if(request.getBody().length() > 0){
+        String rawBody = request.getBody();
+        int bodySize = rawBody.length();
+        String escapedBody = rawBody;
+        escapedBody.replace("\"", "\\\"");
+        String bodyCmd = "AT+SHBOD=\"" + escapedBody + "\"," + String(bodySize);
+        sendAT(bodyCmd.c_str());
+        readAT(2000);
     }
 
     String reqCmd = "AT+SHREQ=\""+ request.getEndpoint() +"\","+ request.getMethod();
