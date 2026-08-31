@@ -120,7 +120,6 @@ HTTPResponse Sim7000G::httpsBegin(HTTPRequest request){
         }
     }
 
-
     int dataLen = 0;
     int statusCode = -1;
     int shreqIdx = reqResult.indexOf("+SHREQ:");
@@ -139,6 +138,7 @@ HTTPResponse Sim7000G::httpsBegin(HTTPRequest request){
     }
 
     sendAT("AT+SHDISC");
+    readAT(2000);
     
     int jsonStart = response.indexOf('{');
     int jsonEnd = response.lastIndexOf('}');
@@ -163,7 +163,7 @@ bool Sim7000G::connectNetwork(const char* apn){
     return ipAddr != "" && ipAddr != "0.0.0.0" && checkBearerStatus(1) ==  BearerStatus_t::BEARER_CONNECTED;
 }
 
-bool Sim7000G::mqttConnect(const char* clientId,const char* mqttBrokerUrl,const int mqttPort){
+bool Sim7000G::mqttConnect(const char* clientId,const char* mqttBrokerUrl,const int mqttPort,const char* username,const char* password){
 
     unsigned long t = millis();
     while (!isDataActive() && millis() - t < 10000) {
@@ -197,7 +197,15 @@ bool Sim7000G::mqttConnect(const char* clientId,const char* mqttBrokerUrl,const 
     sendAT("AT+SMCONF=\"KEEPTIME\",60");
     delay(100);
 
-    sendAT("AT+SMCONF=\"CLEANSS\",1"); 
+    sendAT("AT+SMCONF=\"CLEANSS\",1");
+    delay(100);
+
+    cmd = "AT+SMCONF=\"USERNAME\",\"" + String(username) + "\"";
+    sendAT(cmd.c_str());
+    delay(100);
+
+    cmd = "AT+SMCONF=\"PASSWORD\",\"" + String(password) + "\"";
+    sendAT(cmd.c_str());
     delay(100);
 
     sendAT("AT+SMCONN");
