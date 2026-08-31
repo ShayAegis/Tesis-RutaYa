@@ -3,6 +3,7 @@
 
 struct TrackingPayloadDto{
     String serial;
+    String placa;
     bool esVuelta;
     float lat;
     float lon;
@@ -29,6 +30,7 @@ struct GpsData_t{
 struct TrackerOperatingState{
     int numeroBus;
     int empresaId;
+    String placa;
     String ruta_id;
     LatLng_t paradero_inicio;
     LatLng_t paradero_final;
