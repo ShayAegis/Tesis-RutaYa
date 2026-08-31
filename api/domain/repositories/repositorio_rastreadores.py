@@ -10,6 +10,7 @@ from datetime import time
 class EstadoOperativoRastreador(BaseModel):
     numero_bus: int
     empresa_id: int
+    placa: str
     ruta_codigo: str
     ruta_hora_inicio: time
     ruta_hora_fin: time
