@@ -26,6 +26,7 @@ class RepositorioRastreadoresPostgreSql(RepositorioRastreadores):
             select(
                 Bus.numero_bus,
                 Bus.empresa_id,
+                Bus.placa,
                 Ruta.codigo.label("ruta_codigo"),
                 ST_X(ParaderoInicio.ubicacion).label("paradero_inicio_lon"),
                 ST_Y(ParaderoInicio.ubicacion).label("paradero_inicio_lat"),
@@ -55,6 +56,7 @@ class RepositorioRastreadoresPostgreSql(RepositorioRastreadores):
         return EstadoOperativoRastreador(
             numero_bus=resultado.numero_bus,
             empresa_id=resultado.empresa_id,
+            placa=resultado.placa,
             ruta_codigo=resultado.ruta_codigo,
             ruta_hora_inicio=resultado.hora_inicio,
             ruta_hora_fin=resultado.hora_fin,
