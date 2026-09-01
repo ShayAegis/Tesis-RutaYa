@@ -26,6 +26,7 @@ class TrackingInformation:
     azimut: float
     es_vuelta: bool
     mqtt_topic:str
+    seq: int
 
     @property
     def bus_id(self) -> str:
@@ -51,4 +52,5 @@ class TrackingInformation:
         },
         "received_at": datetime.now(timezone.utc),
         "topic": self.mqtt_topic,
+        "seq": self.seq,
         }

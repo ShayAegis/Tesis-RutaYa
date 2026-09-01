@@ -18,6 +18,7 @@ class TrackerPayload:
     lon: float
     lat: float
     es_vuelta: bool
+    seq: int
 
     def to_tracker_information(self,mqtt_topic:str):
         return TrackingInformation(
@@ -37,5 +38,6 @@ class TrackerPayload:
                 lon=self.lon
             ),
             es_vuelta=self.es_vuelta,
-            mqtt_topic=mqtt_topic
+            mqtt_topic=mqtt_topic,
+            seq=self.seq
         )

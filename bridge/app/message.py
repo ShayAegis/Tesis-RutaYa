@@ -105,5 +105,6 @@ def parse_payload(raw: dict[str, Any], topic: TopicFields) -> TrackerPayload:
         timestamp=datetime.fromtimestamp(raw["timestamp"], tz=timezone.utc),
         lon=lon,
         lat=lat,
-        es_vuelta=raw["esVuelta"]
+        es_vuelta=raw["esVuelta"],
+        seq=int(raw["seq"])
     )
